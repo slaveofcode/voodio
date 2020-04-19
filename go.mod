@@ -3,6 +3,7 @@ module github.com/slaveofcode/pms
 go 1.13
 
 require (
+	github.com/gabriel-vasile/mimetype v1.0.5
 	github.com/jinzhu/gorm v1.9.12
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect

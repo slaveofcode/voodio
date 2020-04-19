@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/slaveofcode/pms/repository/model"
+	"github.com/slaveofcode/pms/repository/models"
 
 	// dialect for sqlite
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -20,5 +20,5 @@ func OpenDB(dbPath string) (*gorm.DB, error) {
 
 // Migrate will do migration of models
 func Migrate(db *gorm.DB) {
-	db.AutoMigrate(&model.Movie{})
+	db.AutoMigrate(&models.Movie{})
 }

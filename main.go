@@ -7,8 +7,10 @@ import (
 	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/slaveofcode/pms/collections"
 	"github.com/slaveofcode/pms/logger"
 	"github.com/slaveofcode/pms/repository"
+	"github.com/slaveofcode/pms/repository/models"
 )
 
 const (
@@ -19,12 +21,11 @@ const (
 var cacheDir, _ = os.UserCacheDir()
 
 func getAppDir() string {
-	return filepath.FromSlash(cacheDir + "/" + appDirName)
+	return filepath.Join(cacheDir, appDirName)
 }
 
 func getDBPath() string {
-	// safe path for cross OS
-	return filepath.FromSlash(getAppDir() + "/" + dbFileName)
+	return filepath.Join(getAppDir(), dbFileName)
 }
 
 func init() {
@@ -90,4 +91,43 @@ func main() {
 	log.Infoln("Preparing database...")
 	repository.Migrate(dbConn)
 	log.Infoln("Database prepared")
+
+	// Scan movies inside given path
+	movies, err := collections.ScanDir(*parentMoviePath)
+	if err != nil {
+		log.Errorln(err)
+	}
+
+	// inserts all detected movies
+	for _, movie := range movies {
+		dbConn.Create(&models.Movie{
+			DirPath:    movie.Dir,
+			DirName:    filepath.Base(movie.Dir),
+			FileSize:   movie.MovieSize,
+			BaseName:   movie.MovieFile,
+			MimeType:   movie.MimeType,
+			IsGroupDir: false,
+			IsPrepared: false,
+		})
+	}
+
+	// Find duplicate directories, means it's kinda serial movie
+	var movieGroups []models.Movie
+	dbConn.Table("movies").Select("dir_name, dir_path, COUNT(*) count").Group("dir_name, dir_path").Having("count > ?", 1).Find(&movieGroups)
+
+	for _, mg := range movieGroups {
+		// find related movie with same dir_name & dir_path
+		var movieList []models.Movie
+		dbConn.Where(&models.Movie{
+			DirName: mg.DirName,
+			DirPath: mg.DirPath,
+		}).Find(&movieList)
+
+		for _, m := range movieList {
+			dbConn.Model(&m).Update(&models.Movie{
+				IsGroupDir: true,
+			})
+		}
+	}
+
 }
