@@ -137,7 +137,7 @@ func main() {
 	}
 
 	// create simple webserver
-	webServer := web.NewServer(*serverPort)
+	webServer := web.NewServer(dbConn, *serverPort)
 
 	closeSignal := make(chan os.Signal, 1)
 	signal.Notify(closeSignal, os.Interrupt)
