@@ -15,11 +15,12 @@ import (
 // MovieExtractHLS will return function to handle extraction trigger of movie
 func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get movie id
-		movieId := strings.TrimSpace(r.URL.Query().Get("movieId"))
+		setupHeaders(&w, r)
 
-		if movieId == "" {
-			w.Header().Set("content-type", "application/json")
+		// get movie id
+		movieID := strings.TrimSpace(r.URL.Query().Get("movieId"))
+
+		if movieID == "" {
 			json, _ := json.Marshal(map[string]interface{}{
 				"processed": false,
 			})
@@ -29,7 +30,7 @@ func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 		}
 
 		var movie models.Movie
-		if cfg.DB.Where("id = ?", movieId).First(&movie).RecordNotFound() {
+		if cfg.DB.Where("id = ?", movieID).First(&movie).RecordNotFound() {
 			w.Header().Set("content-type", "application/json")
 			json, _ := json.Marshal(map[string]interface{}{
 				"processed": false,
