@@ -9,12 +9,14 @@ import (
 	"path/filepath"
 	"time"
 
+	parsetorrentname "github.com/middelink/go-parse-torrent-name"
 	log "github.com/sirupsen/logrus"
 	"github.com/slaveofcode/pms/collections"
 	"github.com/slaveofcode/pms/logger"
 	"github.com/slaveofcode/pms/repository"
 	"github.com/slaveofcode/pms/repository/models"
 	"github.com/slaveofcode/pms/web"
+	"github.com/slaveofcode/pms/web/config"
 )
 
 const (
@@ -106,14 +108,29 @@ func main() {
 
 	// inserts all detected movies
 	for _, movie := range movies {
+		dirName := filepath.Base(movie.Dir)
+		dirNameParsedInfo, err := parsetorrentname.Parse(filepath.Base(movie.Dir))
+		cleanDirName := ""
+		if err == nil {
+			cleanDirName = dirNameParsedInfo.Title
+		}
+
+		baseNameParsedInfo, _ := parsetorrentname.Parse(movie.MovieFile)
+		cleanBaseName := ""
+		if err == nil {
+			cleanBaseName = baseNameParsedInfo.Title
+		}
+
 		dbConn.Create(&models.Movie{
-			DirPath:    movie.Dir,
-			DirName:    filepath.Base(movie.Dir),
-			FileSize:   movie.MovieSize,
-			BaseName:   movie.MovieFile,
-			MimeType:   movie.MimeType,
-			IsGroupDir: false,
-			IsPrepared: false,
+			DirPath:       movie.Dir,
+			DirName:       dirName,
+			CleanDirName:  cleanDirName,
+			FileSize:      movie.MovieSize,
+			BaseName:      movie.MovieFile,
+			CleanBaseName: cleanBaseName,
+			MimeType:      movie.MimeType,
+			IsGroupDir:    false,
+			IsPrepared:    false,
 		})
 	}
 
@@ -137,7 +154,11 @@ func main() {
 	}
 
 	// create simple webserver
-	webServer := web.NewServer(dbConn, *serverPort)
+	webServer := web.NewServer(&config.ServerConfig{
+		DB:     dbConn,
+		Port:   *serverPort,
+		AppDir: getAppDir(),
+	})
 
 	closeSignal := make(chan os.Signal, 1)
 	signal.Notify(closeSignal, os.Interrupt)

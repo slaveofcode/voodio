@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
+	"github.com/slaveofcode/pms/web/config"
 )
 
 func requestIDGenerator() string {
@@ -16,13 +16,13 @@ func requestIDGenerator() string {
 }
 
 // NewServer create new HTTP server
-func NewServer(db *gorm.DB, port int) *http.Server {
+func NewServer(cfg *config.ServerConfig) *http.Server {
 	logrusWriter := logrus.New().Writer()
 	defer logrusWriter.Close()
 
 	server := &http.Server{
-		Addr:         ":" + strconv.Itoa(port),
-		Handler:      NewRouter(db),
+		Addr:         ":" + strconv.Itoa(cfg.Port),
+		Handler:      NewRouter(cfg),
 		ErrorLog:     log.New(logrusWriter, "", 0),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
