@@ -2,7 +2,7 @@
 Voodio is a Simple Private Media Server based on your local Movie Directories. It just a simple program doing tracking on your "Movies" folder, create an index and showing the movies as a web UI to play streamly through the browser.
 
 ## Background
-I always wanted to watch my old movie collection that saved on my external hardisk or on my PC drive. But unfortunately I'am too lazy to open my computer and starting to crawl and watch those movies. I always wonder if I could see those movies as a webpage, click the detail and play, like I'm watching on the Netfl*x, but the movie is based on my collection. 
+I always wanted to watch my old movie collection that saved on my external hardisk or on my PC drive. But unfortunately I'am too lazy to open my computer and starting to crawl and watch those movies. I always wonder if I could see those movies as a webpage, click the detail and play, like I'm watching on the Netfl*x, but the movie is based on my collection. zSo this Voodio is the result.
 
 ## Installation
 
