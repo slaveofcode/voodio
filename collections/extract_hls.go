@@ -1,9 +1,11 @@
 package collections
 
 import (
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/slaveofcode/pms/repository/models"
 )
@@ -14,11 +16,16 @@ const (
 )
 
 func cmdHLS360p(movieFilePath, destDir string) []string {
+	// fixed width not divisible by 2
+	// see https://superuser.com/questions/624563/how-to-resize-a-video-to-make-it-smaller-with-ffmpeg
+	// One downside of scale when using libx264 is that this encoder requires even values
+	// and scale may automatically choose an odd value resulting in an error: width or height not divisible by 2.
+	// You can tell scale to choose an even value for a given height
 	return []string{
 		"-hide_banner",
 		"-y",
 		"-i", movieFilePath,
-		"-vf", "scale=-2:360:force_original_aspect_ratio=decrease",
+		"-vf", "scale=trunc(oh*a/2)*2:360",
 		"-c:a", "aac",
 		"-ar", "48000",
 		"-c:v", "h264", // codec:video output format
@@ -43,7 +50,7 @@ func cmdHLS480p(movieFilePath, destDir string) []string {
 		"-hide_banner",
 		"-y",
 		"-i", movieFilePath,
-		"-vf", "scale=-2:480:force_original_aspect_ratio=decrease",
+		"-vf", "scale=trunc(oh*a/2)*2:480",
 		"-c:a", "aac",
 		"-ar", "48000",
 		"-c:v", "h264",
@@ -69,7 +76,7 @@ func cmdHLS720p(movieFilePath, destDir string) []string {
 		"-hide_banner",
 		"-y",
 		"-i", movieFilePath,
-		"-vf", "scale=-2:720:force_original_aspect_ratio=decrease",
+		"-vf", "scale=trunc(oh*a/2)*2:720",
 		"-c:a", "aac",
 		"-ar", "48000",
 		"-c:v", "h264",
@@ -95,7 +102,7 @@ func cmdHLS1080p(movieFilePath, destDir string) []string {
 		"-hide_banner",
 		"-y",
 		"-i", movieFilePath,
-		"-vf", "scale=-2:1080:force_original_aspect_ratio=decrease",
+		"-vf", "scale=trunc(oh*a/2)*2:1080",
 		"-c:a", "aac",
 		"-ar", "48000",
 		"-c:v", "h264",
@@ -129,17 +136,13 @@ func ExtractMovHLS(movieFilePath, destDir string) error {
 	for _, cmdStrings := range resolutions {
 		go func(out chan<- error, commandProducer func(string, string) []string) {
 			cmd := exec.Command("ffmpeg", commandProducer(movieFilePath, destDir)...)
-			_, err := cmd.CombinedOutput()
+			stdout, err := cmd.CombinedOutput()
 
-			// log.Println("Args:", strings.Join(cmd.Args, " "))
-			// log.Println("output:", string(out))
+			log.Println("Args:", strings.Join(cmd.Args, " "))
+			log.Println("output:", string(stdout))
 			if err != nil {
 				out <- err
-			}
-
-			err = cmd.Run()
-			if err != nil {
-				out <- err
+				return
 			}
 
 			out <- nil
@@ -150,6 +153,8 @@ func ExtractMovHLS(movieFilePath, destDir string) error {
 	for out := range output {
 		errors = append(errors, out)
 	}
+
+	log.Println(errors)
 
 	close(output)
 
