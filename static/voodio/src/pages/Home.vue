@@ -3,7 +3,7 @@
     <Header title="Voodio Media Server" />
     <div class="flex flex-row align-top flex-wrap justify-evenly">
       <div class="movie-cover border border-solid border-gray-600 mb-10 text-center overflow-hidden relative" v-for="(movie, idx) in movies" :key="idx">
-        <router-link :to="{ name: 'movie-detail', params: { id: movie.ID } }" class="text-xl">
+        <router-link v-if="movie.details" :to="{ name: 'movie-detail', params: { id: movie.ID }, query: { tmdbId: (movie.details ? movie.details.id : 0) } }" class="text-xl">
           <img v-if="movie.details" class="bg-cover" :src="parseCover(movie.details.poster_path)" />
           <div class="movie-title absolute bottom-0 text-center w-full h-10 pt-1">
             {{ movie.cleanDirName }}

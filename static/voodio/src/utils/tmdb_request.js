@@ -35,3 +35,13 @@ export const searchFirstByPopularityMovie = async (keyword) => {
 
   return movie;
 }
+
+export const getDetailMovieById = async (id) => {
+  const { data } = await getRequest().get(`/movie/${id}`, {
+    params: {
+      ...defaultParams,
+    }
+  })
+
+  return data
+}
