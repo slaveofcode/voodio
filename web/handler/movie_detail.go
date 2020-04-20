@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/slaveofcode/pms/repository/models"
-	"github.com/slaveofcode/pms/web/config"
+	"github.com/slaveofcode/voodio/repository/models"
+	"github.com/slaveofcode/voodio/web/config"
 )
 
 // MovieDetail will return function to handle movie detail request

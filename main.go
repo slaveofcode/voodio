@@ -11,17 +11,17 @@ import (
 
 	parsetorrentname "github.com/middelink/go-parse-torrent-name"
 	log "github.com/sirupsen/logrus"
-	"github.com/slaveofcode/pms/collections"
-	"github.com/slaveofcode/pms/logger"
-	"github.com/slaveofcode/pms/repository"
-	"github.com/slaveofcode/pms/repository/models"
-	"github.com/slaveofcode/pms/web"
-	"github.com/slaveofcode/pms/web/config"
+	"github.com/slaveofcode/voodio/collections"
+	"github.com/slaveofcode/voodio/logger"
+	"github.com/slaveofcode/voodio/repository"
+	"github.com/slaveofcode/voodio/repository/models"
+	"github.com/slaveofcode/voodio/web"
+	"github.com/slaveofcode/voodio/web/config"
 )
 
 const (
-	appDirName = "pmsapp"
-	dbFileName = "pms.db"
+	appDirName = "voodioapp"
+	dbFileName = "voodio.db"
 )
 
 var cacheDir, _ = os.UserCacheDir()

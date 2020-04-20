@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/slaveofcode/pms/repository/models"
+	"github.com/slaveofcode/voodio/repository/models"
 )
 
 const (

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/slaveofcode/pms/repository/models"
+	"github.com/slaveofcode/voodio/repository/models"
 
 	// dialect for sqlite
 	_ "github.com/jinzhu/gorm/dialects/sqlite"

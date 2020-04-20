@@ -7,9 +7,9 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
-	"github.com/slaveofcode/pms/collections"
-	"github.com/slaveofcode/pms/repository/models"
-	"github.com/slaveofcode/pms/web/config"
+	"github.com/slaveofcode/voodio/collections"
+	"github.com/slaveofcode/voodio/repository/models"
+	"github.com/slaveofcode/voodio/web/config"
 )
 
 // MovieExtractHLS will return function to handle extraction trigger of movie

@@ -6,7 +6,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
-	"github.com/slaveofcode/pms/repository/models"
+	"github.com/slaveofcode/voodio/repository/models"
 )
 
 // MoviesPage will return function to handle Movie list

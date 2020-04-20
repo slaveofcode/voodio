@@ -3,8 +3,8 @@ package web
 import (
 	"net/http"
 
-	"github.com/slaveofcode/pms/web/config"
-	"github.com/slaveofcode/pms/web/handler"
+	"github.com/slaveofcode/voodio/web/config"
+	"github.com/slaveofcode/voodio/web/handler"
 )
 
 // NewRouter will return new router

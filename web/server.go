@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/slaveofcode/pms/web/config"
+	"github.com/slaveofcode/voodio/web/config"
 )
 
 func requestIDGenerator() string {
