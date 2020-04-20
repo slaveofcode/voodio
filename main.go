@@ -1,16 +1,22 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"fmt"
+	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"time"
 
+	parsetorrentname "github.com/middelink/go-parse-torrent-name"
 	log "github.com/sirupsen/logrus"
 	"github.com/slaveofcode/pms/collections"
 	"github.com/slaveofcode/pms/logger"
 	"github.com/slaveofcode/pms/repository"
 	"github.com/slaveofcode/pms/repository/models"
+	"github.com/slaveofcode/pms/web"
+	"github.com/slaveofcode/pms/web/config"
 )
 
 const (
@@ -70,6 +76,7 @@ func cleanup() {
 
 func main() {
 	parentMoviePath := flag.String("path", "", "Path string of parent movie directory")
+	serverPort := flag.Int("port", 1818, "Server port number")
 	flag.Parse()
 
 	if len(*parentMoviePath) == 0 {
@@ -78,11 +85,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Searching around %s path", *parentMoviePath)
-
 	dbConn, err := repository.OpenDB(getDBPath())
 	if err != nil {
 		log.Errorln("Unable to create DB connection")
+		cleanup()
 		os.Exit(1)
 	}
 
@@ -95,19 +101,36 @@ func main() {
 	// Scan movies inside given path
 	movies, err := collections.ScanDir(*parentMoviePath)
 	if err != nil {
-		log.Errorln(err)
+		log.Errorln("Error while scanning path", err)
+		cleanup()
+		os.Exit(1)
 	}
 
 	// inserts all detected movies
 	for _, movie := range movies {
+		dirName := filepath.Base(movie.Dir)
+		dirNameParsedInfo, err := parsetorrentname.Parse(filepath.Base(movie.Dir))
+		cleanDirName := ""
+		if err == nil {
+			cleanDirName = dirNameParsedInfo.Title
+		}
+
+		baseNameParsedInfo, _ := parsetorrentname.Parse(movie.MovieFile)
+		cleanBaseName := ""
+		if err == nil {
+			cleanBaseName = baseNameParsedInfo.Title
+		}
+
 		dbConn.Create(&models.Movie{
-			DirPath:    movie.Dir,
-			DirName:    filepath.Base(movie.Dir),
-			FileSize:   movie.MovieSize,
-			BaseName:   movie.MovieFile,
-			MimeType:   movie.MimeType,
-			IsGroupDir: false,
-			IsPrepared: false,
+			DirPath:       movie.Dir,
+			DirName:       dirName,
+			CleanDirName:  cleanDirName,
+			FileSize:      movie.MovieSize,
+			BaseName:      movie.MovieFile,
+			CleanBaseName: cleanBaseName,
+			MimeType:      movie.MimeType,
+			IsGroupDir:    false,
+			IsPrepared:    false,
 		})
 	}
 
@@ -130,4 +153,42 @@ func main() {
 		}
 	}
 
+	// create simple webserver
+	webServer := web.NewServer(&config.ServerConfig{
+		DB:     dbConn,
+		Port:   *serverPort,
+		AppDir: getAppDir(),
+	})
+
+	closeSignal := make(chan os.Signal, 1)
+	signal.Notify(closeSignal, os.Interrupt)
+
+	serverDone := make(chan bool)
+
+	go func() {
+		<-closeSignal
+		log.Infoln("got close signal")
+
+		// Waiting for current process server to finish with 30 secs timeout
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+		defer cancel()
+
+		webServer.SetKeepAlivesEnabled(false)
+		if err := webServer.Shutdown(ctx); err != nil {
+			log.Errorln("Couldn't gracefully shutdown")
+		}
+
+		serverDone <- true
+	}()
+
+	log.Infoln("Server is alive on port", *serverPort)
+	if err = webServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Errorln("Unable to start server on port", *serverPort)
+	}
+
+	<-serverDone
+
+	cleanup()
+
+	log.Infoln("Server closed")
 }

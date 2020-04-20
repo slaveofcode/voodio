@@ -50,7 +50,7 @@ func Identify(basePath string, file os.FileInfo) ([]MovieDirInfo, error) {
 	if mime, validVideo := isVideo(filepath.Join(basePath, file.Name())); validVideo {
 		listMovie = append(listMovie, MovieDirInfo{
 			Dir:       basePath,
-			MovieFile: filepath.Join(basePath, file.Name()),
+			MovieFile: file.Name(),
 			MovieSize: getFileSizeInMB(file),
 			Info:      file,
 			MimeType:  mime,
