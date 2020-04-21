@@ -6,7 +6,8 @@
         <router-link v-if="movie.details" :to="{ name: 'movie-detail', params: { id: movie.ID }, query: { tmdbId: (movie.details ? movie.details.id : 0) } }" class="text-xl">
           <img v-if="movie.details" class="bg-cover" :src="parseCover(movie.details.poster_path)" />
           <div class="movie-title absolute bottom-0 text-center w-full h-10 pt-1">
-            {{ movie.cleanDirName }}
+            <span v-if="movie.isInPrepare || movie.isPrepared" class="text-green-500">{{ movie.cleanDirName }}</span>
+            <span v-if="!(movie.isInPrepare || movie.isPrepared)">{{ movie.cleanDirName }}</span>
           </div>
         </router-link>
       </div>
