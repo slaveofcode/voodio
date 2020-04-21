@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faFilm } from '@fortawesome/free-solid-svg-icons'
+import { faFilm, faCogs } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import router from './router'
@@ -13,6 +13,7 @@ Vue.config.productionTip = false
 
 library.add([
   faFilm,
+  faCogs
 ])
 
 Vue.component('fa-icon', FontAwesomeIcon)

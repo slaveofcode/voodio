@@ -26,3 +26,15 @@ export const getMovieDetail = async (movieId) => {
 
   return data
 }
+
+export const prepareMovie = async (movieId) => {
+  const { status, data } = await getRequest().get('/movies/prepare', {
+    params: { movieId }
+  })
+
+  if (status !== 200) {
+    return {}
+  }
+
+  return data
+}

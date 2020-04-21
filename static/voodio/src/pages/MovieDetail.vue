@@ -26,11 +26,17 @@
             </div>
           </div>
         </div>
-        <div v-if="vplayerMounted" class="my-4 mt-12">
-          <button class="bg-green-700 text-3xl px-6 py-1" @click="playMovie()">
+        <div class="my-4 mt-12">
+          <button v-if="vplayerMounted && isMoviePrepared" class="bg-green-700 text-3xl px-6 py-1" @click="playMovie()">
             <fa-icon :icon="['fas', 'film']" />
             Play Movie
           </button>
+          <button v-if="!isMoviePrepared" class="bg-orange-500 text-lg px-3 py-2" @click="prepareTheMovie()">
+            <fa-icon :icon="['fas', 'cogs']" />
+            Prepare the Movie
+          </button>
+          <p v-if="!isMoviePrepared" class="mt-4 text-orange-500">This movie isn't prepared, click to start video transcoding</p>
+          <p class="text-yellow-500">* This operation might need more Disk Space and CPU resources</p>
         </div>
       </div>
     </div>
@@ -71,13 +77,11 @@
 </style>
 
 <script>
-// import Hls from 'hls.js';
-// import 'video.js/dist/video'
 import videojs from 'video.js/dist/video'
 import 'video.js/dist/video-js.css'
 import Layout from "@/layouts/Main";
 import Header from '@/components/Header';
-import { getMovieDetail } from '@/utils/voodio_request';
+import { getMovieDetail, prepareMovie } from '@/utils/voodio_request';
 import { getDetailMovieById } from '@/utils/tmdb_request';
 
 export default {
@@ -94,6 +98,11 @@ export default {
       videoJsInst: undefined,
     }
   },
+  computed: {
+    isMoviePrepared() {
+      return this.detail.isPrepared || this.detail.isInPrepare
+    }
+  },
   created() {
     const { id } = this.$route.params
     const { tmdbId } = this.$route.query
@@ -103,16 +112,18 @@ export default {
       this.detail = detail
       this.videoSource = `http://192.168.8.102:1818/hls/${this.detail.cleanDirName}/playlist.m3u8`
 
-      this.$nextTick(() => {
-        console.log("mounted -> this.$refs.vplayer", this.$refs.vplayer)
-        if (this.$refs.vplayer && !this.vplayerMounted) {
-          const t = this
-          videojs(this.$refs.vplayer, {}, function() {
-            t.vplayerMounted = true
-            t.videoJsInst = this
-          })
-        }
-      })
+      if (this.isMoviePrepared) {
+        this.$nextTick(() => {
+          console.log("mounted -> this.$refs.vplayer", this.$refs.vplayer)
+          if (this.$refs.vplayer && !this.vplayerMounted) {
+            const t = this
+            videojs(this.$refs.vplayer, {}, function() {
+              t.vplayerMounted = true
+              t.videoJsInst = this
+            })
+          }
+        })
+      }
     })
 
     if (tmdbId) {
@@ -133,6 +144,11 @@ export default {
       if (this.vplayerMounted && this.videoJsInst) {
         this.videoJsInst.play()
       }
+    },
+    prepareTheMovie() {
+      prepareMovie(this.detail.ID).then(() => {
+        console.log('Preparing the movie')
+      })
     }
   }
 }
