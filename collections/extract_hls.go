@@ -181,7 +181,7 @@ func ExtractMovHLS(movieFilePath, destDir string) error {
 
 // DoExtraction will do extract HLS files
 func DoExtraction(movie *models.Movie, appDir string) error {
-	extractionDirName := filepath.Join(appDir, ExtractionDirName, movie.DirName)
+	extractionDirName := filepath.Join(appDir, ExtractionDirName, movie.CleanDirName)
 
 	if err := os.MkdirAll(extractionDirName, 0777); err != nil {
 		return err

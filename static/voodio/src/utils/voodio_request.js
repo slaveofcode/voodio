@@ -2,7 +2,7 @@ import Axios from 'axios';
 
 const getRequest = () => {
   return Axios.create({
-    baseURL: 'http://localhost:1818'
+    baseURL: 'http://192.168.8.102:1818'
   })
 }
 
