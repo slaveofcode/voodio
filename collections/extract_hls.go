@@ -123,6 +123,22 @@ func cmdHLS1080p(movieFilePath, destDir string) []string {
 	}
 }
 
+func createm3u8Playlist(path string) {
+	f, _ := os.Create(filepath.Join(path, "playlist.m3u8"))
+	defer f.Close()
+
+	f.Write([]byte(`#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
+360p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=842x480
+480p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
+720p.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
+1080p.m3u8`))
+}
+
 // ExtractMovHLS will generate HLS files
 func ExtractMovHLS(movieFilePath, destDir string) error {
 	resolutions := map[string]func(string, string) []string{
@@ -131,6 +147,8 @@ func ExtractMovHLS(movieFilePath, destDir string) error {
 		"720p":  cmdHLS720p,
 		"1080p": cmdHLS1080p,
 	}
+
+	createm3u8Playlist(destDir)
 
 	output := make(chan error, len(resolutions))
 	for _, cmdStrings := range resolutions {
