@@ -11,8 +11,8 @@
         <h1 v-if="detail.tmdbInfo" class="text-orange-400">{{ detail.tmdbInfo.title }}</h1>
         <p v-if="detail.tmdbInfo" class="text-brown-400">{{ detail.tmdbInfo.tagline }}</p>
         <div v-if="detail.tmdbInfo" class="my-4 flex flex-row justify-center md:justify-start">
-          <p class="font-bold mr-4 bg-brown-800 px-3 py-1">Rating: <span class="text-yellow-500">{{ detail.tmdbInfo.vote_average }}</span></p>
-          <p class="font-bold bg-brown-800 px-3 py-1">Release Date: <span class="text-yellow-500">{{ detail.tmdbInfo.release_date }}</span></p>
+          <p class="font-bold text-xs md:text-base mr-4 bg-brown-800 px-3 py-1">Rating: <span class="text-yellow-500">{{ detail.tmdbInfo.vote_average }}</span></p>
+          <p class="font-bold text-xs md:text-base bg-brown-800 px-3 py-1">Release Date: <span class="text-yellow-500">{{ detail.tmdbInfo.release_date }}</span></p>
         </div>
         <div class="my-4 mt-6">
           <p class="font-bold mb-4">Overview</p>
@@ -55,8 +55,14 @@
 }
 
 .video-js {
-  width: 720px;
-  height: 400px;
+  width: 100% !important;
+  height: auto !important;
+}
+
+.video-js .vjs-tech {
+  position: static;
+  max-width: 100%;
+  height: auto;
 }
 
 .genre-pills:first-child{
