@@ -15,8 +15,6 @@ import (
 // MovieExtractHLS will return function to handle extraction trigger of movie
 func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		setupHeaders(&w, r)
-
 		// get movie id
 		movieID := strings.TrimSpace(r.URL.Query().Get("movieId"))
 

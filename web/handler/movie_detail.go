@@ -12,7 +12,6 @@ import (
 // MovieDetail will return function to handle movie detail request
 func MovieDetail(cfg *config.ServerConfig) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		setupHeaders(&w, r)
 		movieID := strings.TrimSpace(r.URL.Query().Get("movieId"))
 
 		var movie models.Movie

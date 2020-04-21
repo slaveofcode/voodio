@@ -12,8 +12,6 @@ import (
 // MoviesPage will return function to handle Movie list
 func MoviesPage(db *gorm.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		setupHeaders(&w, r)
-
 		var nonGroupMovies []models.Movie
 		db.Where("is_group_dir = ?", false).Find(&nonGroupMovies)
 
