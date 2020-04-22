@@ -77,7 +77,7 @@
 </style>
 
 <script>
-import videojs from 'video.js/dist/video'
+import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 import Layout from "@/layouts/Main";
 import Header from '@/components/Header';
