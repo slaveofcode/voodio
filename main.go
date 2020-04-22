@@ -43,8 +43,7 @@ func init() {
 	if _, err := os.Stat(appDirPath); os.IsNotExist(err) {
 		err = os.MkdirAll(appDirPath, 0777)
 		if err != nil {
-			log.Errorln("Unable to create App Dir on ", appDirPath)
-			os.Exit(1)
+			panic("Unable to create App Dir on " + appDirPath)
 		}
 		log.Infoln("Created App dir at", appDirPath)
 	}
@@ -55,8 +54,7 @@ func init() {
 	if !os.IsNotExist(err) {
 		log.Infoln("Obsolete DB detected, removing...")
 		if err = os.Remove(dbPath); err != nil {
-			log.Errorln("Unable removing obsolete DB")
-			os.Exit(1)
+			panic("Unable removing obsolete DB")
 		}
 	}
 
@@ -80,16 +78,14 @@ func main() {
 	flag.Parse()
 
 	if len(*parentMoviePath) == 0 {
-		log.Errorln("No movie path directory provided, exited")
 		cleanup()
-		os.Exit(1)
+		panic("No movie path directory provided, exited")
 	}
 
 	dbConn, err := repository.OpenDB(getDBPath())
 	if err != nil {
-		log.Errorln("Unable to create DB connection")
 		cleanup()
-		os.Exit(1)
+		panic("Unable to create DB connection")
 	}
 
 	defer dbConn.Close()
@@ -101,9 +97,8 @@ func main() {
 	// Scan movies inside given path
 	movies, err := collections.ScanDir(*parentMoviePath)
 	if err != nil {
-		log.Errorln("Error while scanning path", err)
 		cleanup()
-		os.Exit(1)
+		panic("Error while scanning path " + err.Error())
 	}
 
 	// inserts all detected movies
@@ -134,9 +129,13 @@ func main() {
 		})
 	}
 
-	// Find duplicate directories, means it's kinda serial movie
+	// Find duplicate directory names, kinda serial movie
 	var movieGroups []models.Movie
-	dbConn.Table("movies").Select("dir_name, dir_path, COUNT(*) count").Group("dir_name, dir_path").Having("count > ?", 1).Find(&movieGroups)
+	dbConn.Table("movies").
+		Select("dir_name, dir_path, COUNT(*) count").
+		Group("dir_name, dir_path").
+		Having("count > ?", 1).
+		Find(&movieGroups)
 
 	for _, mg := range movieGroups {
 		// find related movie with same dir_name & dir_path
