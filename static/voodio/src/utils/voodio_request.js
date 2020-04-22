@@ -1,8 +1,9 @@
 import Axios from 'axios';
+import { getCurrHost } from './url'
 
 const getRequest = () => {
   return Axios.create({
-    baseURL: 'http://192.168.8.102:1818'
+    baseURL: `http://${getCurrHost()}:1818`
   })
 }
 

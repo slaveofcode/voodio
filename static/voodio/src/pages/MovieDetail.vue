@@ -33,7 +33,7 @@
           </button>
           <button v-if="!isMoviePrepared" class="bg-orange-500 text-lg px-3 py-2" @click="prepareTheMovie()">
             <fa-icon :icon="['fas', 'cogs']" />
-            Prepare the Movie
+            {{ !isOnPrepareMovie ? 'Prepare the Movie' : 'Movie Preparing...' }}
           </button>
           <p v-if="!isMoviePrepared" class="mt-4 text-orange-500">This movie isn't prepared, click to start video transcoding</p>
           <p class="text-yellow-500">* This operation might need more Disk Space and CPU resources</p>
@@ -83,6 +83,7 @@ import Layout from "@/layouts/Main";
 import Header from '@/components/Header';
 import { getMovieDetail, prepareMovie } from '@/utils/voodio_request';
 import { getDetailMovieById } from '@/utils/tmdb_request';
+import { getCurrHost } from '@/utils/url';
 
 export default {
   components: {
@@ -96,6 +97,7 @@ export default {
       videoSource: undefined,
       vplayerMounted: false,
       videoJsInst: undefined,
+      isOnPrepareMovie: false
     }
   },
   computed: {
@@ -110,16 +112,23 @@ export default {
     getMovieDetail(id).then((detail) => {
       // this.detail = detail
       this.detail = detail
-      this.videoSource = `http://192.168.8.102:1818/hls/${this.detail.cleanDirName}/playlist.m3u8`
+      this.videoSource = `http://${getCurrHost()}:1818/hls/${this.detail.cleanDirName}/playlist.m3u8`
 
       if (this.isMoviePrepared) {
         this.$nextTick(() => {
-          console.log("mounted -> this.$refs.vplayer", this.$refs.vplayer)
           if (this.$refs.vplayer && !this.vplayerMounted) {
             const t = this
-            videojs(this.$refs.vplayer, {}, function() {
+            videojs(this.$refs.vplayer, {
+              controls: true,
+              autoplay: false,
+              loop: false,
+              preload: 'metadata',
+              fluid: true,
+              liveui: true,
+            }, function() {
               t.vplayerMounted = true
               t.videoJsInst = this
+              // this.addRemoteTextTrack({src: `http://${getCurrHost()}:1818/hls/${t.detail.cleanDirName}/subs.vtt`}, false)
             })
           }
         })
@@ -130,6 +139,12 @@ export default {
       getDetailMovieById(tmdbId).then((tmdbInfo) => {
         this.videoPoster = this.parseBackdrop(tmdbInfo.backdrop_path)
         this.$set(this.detail, 'tmdbInfo', tmdbInfo)
+
+        setTimeout(() => {
+          if (this.videoJsInst) {
+            this.videoJsInst.poster(this.videoPoster)
+          }
+        }, 2000)
       })
     }
   },
@@ -147,7 +162,10 @@ export default {
     },
     prepareTheMovie() {
       prepareMovie(this.detail.ID).then(() => {
-        console.log('Preparing the movie')
+        this.isOnPrepareMovie = true
+        setTimeout(() => {
+          this.$router.go() // reload
+        }, 4500)
       })
     }
   }
