@@ -180,6 +180,10 @@ func main() {
 		serverDone <- true
 	}()
 
+	log.Infoln("Activate Web UI Server")
+	go web.NewStaticServer("8080")
+
+	log.Infoln("Activate API Server")
 	log.Infoln("Server is alive on port", *serverPort)
 	if err = webServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Errorln("Unable to start server on port", *serverPort)
