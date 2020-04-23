@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+
+html {
+  @apply bg-black text-white;
+}
+
+h1 {
+  @apply text-2xl;
+}
+
+h2 {
+  @apply text-xl;
+}
+
+h3 {
+  @apply text-lg;
+}
+
+h4 {
+  @apply text-base;
+}
+
+.btn {
+  @apply text-sm text-brown-800 bg-brown-200 border border-brown-200 rounded px-4 py-2;
+}
+
+@tailwind utilities;
