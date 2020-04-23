@@ -11,7 +11,7 @@ This application will need extra space like **8-10x** of the played video which 
 
 ### Have FFMPEG installed on your OS
 
-Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html page to install based on your current OS. FFmpeg is available for **Windows**, **Mac** and **Linux**
+Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html) page to install based on your current OS. FFmpeg is available for **Windows**, **Mac** and **Linux**
 
 ### Using Go Get
 
