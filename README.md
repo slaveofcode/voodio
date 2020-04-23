@@ -19,7 +19,7 @@ Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html page to in
     // run the binary with path to the parent of video directories
     ./voodio -path /path/to/videos/dir
 
-If the configuration and steps above is complete, you can heads up to http://localhost:8080 on your browser to start watching. By default the server will spawn 2 service on port `:8080` for Web UI and `:8181` for Server API.
+If the configuration and steps above is complete, you can heads up to http://localhost:8080 on your browser to start watching. By default the server will spawn 2 service on port `:8080` for Web UI and `:1818` for Server API.
 
 ### Screenshot
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/home.jpg" align="center" />
