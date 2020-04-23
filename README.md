@@ -7,8 +7,24 @@ I always wanted to watch my old movie collection that saved on my external hardi
 ## Installation
 
 ### Have FFMPEG installed on your OS
+
+Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html page to install based on your current OS. FFmpeg is available for **Windows**, **Mac** and **Linux**
+
 ### Using Go Get
-### Download the Binary 
+
+    // install it via go get
+    go get github.com/slaveofcode/voodio
+
+
+    // run the binary with path to the parent of video directories
+    ./voodio -path /path/to/videos/dir
+
+If the configuration and steps above is complete, you can heads up to http://localhost:8080 on your browser to start watching. By default the server will spawn 2 service on port `:8080` for Web UI and `:8181` for Server API.
+
+### Screenshot
+<img src="https://raw.github.com/slaveofcode/voodio/master/assets/home.png" align="center" />
+<img src="https://raw.github.com/slaveofcode/voodio/master/assets/detail.png" align="center" />
+<img src="https://raw.github.com/slaveofcode/voodio/master/assets/play.png" align="center" />
 
 # LICENSE
 MIT
