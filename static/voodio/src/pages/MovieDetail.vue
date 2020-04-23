@@ -36,7 +36,8 @@
             {{ !isOnPrepareMovie ? 'Prepare the Movie' : 'Movie Preparing...' }}
           </button>
           <p v-if="!isMoviePrepared" class="mt-4 text-orange-500">This movie isn't prepared, click to start video transcoding</p>
-          <p class="text-yellow-500">* This operation might need more Disk Space and CPU resources</p>
+          <p v-if="!isMoviePrepared" class="text-green-500 text-sm">* You can start watching streamly while the video is processed in the background</p>
+          <p v-if="!isMoviePrepared" class="text-yellow-500 text-sm">* This operation might drain you Disk Space and CPU resources for a temporary</p>
         </div>
       </div>
     </div>
@@ -123,7 +124,7 @@ export default {
               autoplay: false,
               loop: false,
               preload: 'metadata',
-              fluid: true,
+              // fluid: true,
               liveui: true,
             }, function() {
               t.vplayerMounted = true
