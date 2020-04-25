@@ -2,7 +2,10 @@
 Voodio is a Simple Private Media Server based on your local Movie Directories. It just a simple program doing tracking on your "Movies" folder, create an index and showing the movies as a web UI to play streamly through the browser.
 
 ## Background
-I always wanted to watch my old movie collection that saved on my external hardisk or on my PC drive. But unfortunately I'am too lazy to open my computer and starting to crawl and watch those movies. I always wonder if I could see those movies as a webpage, click the detail and play, like I'm watching on the Netfl*x, but the movie is based on my collection. zSo this Voodio is the result.
+I always wanted to watch my old movie collection that saved on my external hardisk or on my PC drive. But unfortunately I'am too lazy to open my computer and starting to crawl and watch those movies. I always wonder if I could see those movies as a webpage, click the detail and play, like I'm watching on the Netfl*x, but the movie is based on my collection. 
+
+## Application Behavior
+This application will need extra space like **8-10x** of the played video which extracted from FFmpeg transcoding/transmuxing process of **HLS** files, so then you can play it streamly through your favourite device via **Browser**. The space will be cleand up after the server is turned of (killed), it will be immediatelly deletes all the generated HLS files so you can get the disk again at the end.
 
 ## Installation
 
@@ -23,7 +26,7 @@ Go to the prebuilt binary on the release section here, depending on what your OS
     // options for port and ffmpeg-bin are optional
     ~/go/bin/voodio -port 8080 -tmdb-key <your-tmdb-key> -ffmpeg-bin /usr/bin/ffmpeg -path /path/to/videos/dir 
 
-If the configuration and steps above is complete, you can heads up to http://localhost:8080 on your browser to start watching.
+If the configuration and steps above is complete, you can heads up to http://[your-ip-host-or-localhost]:8080 on your browser to start watching.
 
 ### Running Options
 
@@ -33,7 +36,7 @@ If the configuration and steps above is complete, you can heads up to http://loc
 - `-ffmpeg-bin` (optional) The path of FFmpeg binary, if you have a different path of FFmpeg
 
 ### Screenshot
-<img src="https://raw.github.com/slaveofcode/voodio/master/assets/home.png" align="center" />
+<img src="https://raw.github.com/slaveofcode/voodio/master/assets/home.jpg" align="center" />
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/detail.png" align="center" />
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/play.png" align="center" />
 
