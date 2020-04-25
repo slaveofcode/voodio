@@ -16,7 +16,7 @@ Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html) page to i
 
 ### Using Precompiled Binary
 
-Go to the prebuilt binary on the release section here, depending on what your OS 
+Go to the prebuilt binary on the [release section here](https://github.com/slaveofcode/voodio/releases), depending on what your OS 
 
 ### Using Go Get
 
