@@ -8,18 +8,29 @@ I always wanted to watch my old movie collection that saved on my external hardi
 
 ### Have FFMPEG installed on your OS
 
-Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html page to install based on your current OS. FFmpeg is available for **Windows**, **Mac** and **Linux**
+Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html) page to install based on your current OS. FFmpeg is available for **Windows**, **Mac** and **Linux**
+
+### Using Precompiled Binary
+
+Go to the prebuilt binary on the release section here, depending on what your OS 
 
 ### Using Go Get
 
     // install it via go get
     go get github.com/slaveofcode/voodio
 
+    // run the binary with path to the parent of video directories from your module binary path
+    // options for port and ffmpeg-bin are optional
+    ~/go/bin/voodio -port 8080 -tmdb-key <your-tmdb-key> -ffmpeg-bin /usr/bin/ffmpeg -path /path/to/videos/dir 
 
-    // run the binary with path to the parent of video directories
-    ./voodio -path /path/to/videos/dir
+If the configuration and steps above is complete, you can heads up to http://localhost:8080 on your browser to start watching.
 
-If the configuration and steps above is complete, you can heads up to http://localhost:8080 on your browser to start watching. By default the server will spawn 2 service on port `:8080` for Web UI and `:8181` for Server API.
+### Running Options
+
+- `-path` The full path of the video directory
+- `-tmdb-key` API key of TMDB, you can grab one at [Official TMDB API](https://www.themoviedb.org/documentation/api)
+- `-port` (optional) The port number for the server to run
+- `-ffmpeg-bin` (optional) The path of FFmpeg binary, if you have a different path of FFmpeg
 
 ### Screenshot
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/home.png" align="center" />
