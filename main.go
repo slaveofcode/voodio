@@ -75,6 +75,8 @@ func cleanup() {
 func main() {
 	parentMoviePath := flag.String("path", "", "Path string of parent movie directory")
 	serverPort := flag.Int("port", 1818, "Server port number")
+	ffmpegPath := flag.String("ffmpeg-bin", "ffmpeg", "Custom full path for FFmpeg binary")
+
 	flag.Parse()
 
 	if len(*parentMoviePath) == 0 {
@@ -93,6 +95,8 @@ func main() {
 	log.Infoln("Preparing database...")
 	repository.Migrate(dbConn)
 	log.Infoln("Database prepared")
+
+	// Check FFmpeg installed or setup in a right way
 
 	// Scan movies inside given path
 	movies, err := collections.ScanDir(*parentMoviePath)
@@ -154,9 +158,10 @@ func main() {
 
 	// create simple webserver
 	webServer := web.NewServer(&config.ServerConfig{
-		DB:     dbConn,
-		Port:   *serverPort,
-		AppDir: getAppDir(),
+		DB:        dbConn,
+		Port:      *serverPort,
+		AppDir:    getAppDir(),
+		FFmpegBin: *ffmpegPath,
 	})
 
 	closeSignal := make(chan os.Signal, 1)
@@ -179,9 +184,6 @@ func main() {
 
 		serverDone <- true
 	}()
-
-	log.Infoln("Activate Web UI Server")
-	go web.NewStaticServer("8080")
 
 	log.Infoln("Activate API Server")
 	log.Infoln("Server is alive on port", *serverPort)

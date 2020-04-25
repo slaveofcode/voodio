@@ -29,7 +29,6 @@ func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 
 		var movie models.Movie
 		if cfg.DB.Where("id = ?", movieID).First(&movie).RecordNotFound() {
-			w.Header().Set("content-type", "application/json")
 			json, _ := json.Marshal(map[string]interface{}{
 				"processed": false,
 			})
@@ -39,7 +38,6 @@ func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 		}
 
 		if movie.IsInPrepare || movie.IsPrepared {
-			w.Header().Set("content-type", "application/json")
 			json, _ := json.Marshal(map[string]interface{}{
 				"processed": true,
 			})
@@ -55,7 +53,7 @@ func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 			})
 
 			// extract
-			err := collections.DoExtraction(&mov, cfg.AppDir)
+			err := collections.DoExtraction(&mov, cfg.AppDir, cfg.FFmpegBin)
 
 			if err != nil {
 				logrus.Errorln("Something wrong when extracting HLS file", err)
