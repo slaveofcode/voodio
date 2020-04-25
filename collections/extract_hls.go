@@ -140,7 +140,7 @@ func createm3u8Playlist(path string) {
 }
 
 // ExtractMovHLS will generate HLS files
-func ExtractMovHLS(movieFilePath, destDir string) error {
+func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string) error {
 	resolutions := map[string]func(string, string) []string{
 		"360p":  cmdHLS360p,
 		"480p":  cmdHLS480p,
@@ -153,7 +153,7 @@ func ExtractMovHLS(movieFilePath, destDir string) error {
 	output := make(chan error, len(resolutions))
 	for _, cmdStrings := range resolutions {
 		go func(out chan<- error, commandProducer func(string, string) []string) {
-			cmd := exec.Command("ffmpeg", commandProducer(movieFilePath, destDir)...)
+			cmd := exec.Command(ffmpegPathBin, commandProducer(movieFilePath, destDir)...)
 			stdout, err := cmd.CombinedOutput()
 
 			log.Println("Args:", strings.Join(cmd.Args, " "))
@@ -180,12 +180,16 @@ func ExtractMovHLS(movieFilePath, destDir string) error {
 }
 
 // DoExtraction will do extract HLS files
-func DoExtraction(movie *models.Movie, appDir string) error {
+func DoExtraction(movie *models.Movie, appDir string, FFmpegBin string) error {
 	extractionDirName := filepath.Join(appDir, ExtractionDirName, movie.CleanDirName)
 
 	if err := os.MkdirAll(extractionDirName, 0777); err != nil {
 		return err
 	}
 
-	return ExtractMovHLS(filepath.Join(movie.DirPath, movie.BaseName), extractionDirName)
+	return ExtractMovHLS(
+		filepath.Join(movie.DirPath, movie.BaseName),
+		extractionDirName,
+		FFmpegBin,
+	)
 }
