@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"time"
 
 	parsetorrentname "github.com/middelink/go-parse-torrent-name"
@@ -75,11 +76,21 @@ func cleanup() {
 func main() {
 	parentMoviePath := flag.String("path", "", "Path string of parent movie directory")
 	serverPort := flag.Int("port", 1818, "Server port number")
+	ffmpegPath := flag.String("ffmpeg-bin", "ffmpeg", "Custom full path for FFmpeg binary")
+	tmdbAPIKey := flag.String("tmdb-key", "", "Your TMDB Api Key, get here if you don't have one https://www.themoviedb.org/documentation/api")
+
 	flag.Parse()
 
 	if len(*parentMoviePath) == 0 {
 		cleanup()
 		panic("No movie path directory provided, exited")
+	}
+
+	// TODO: Check FFmpeg installed or setup in a right way
+
+	if len(strings.TrimSpace(*tmdbAPIKey)) == 0 {
+		cleanup()
+		panic("No TMDB Api Key provided, exited")
 	}
 
 	dbConn, err := repository.OpenDB(getDBPath())
@@ -154,9 +165,11 @@ func main() {
 
 	// create simple webserver
 	webServer := web.NewServer(&config.ServerConfig{
-		DB:     dbConn,
-		Port:   *serverPort,
-		AppDir: getAppDir(),
+		DB:         dbConn,
+		Port:       *serverPort,
+		AppDir:     getAppDir(),
+		FFmpegBin:  *ffmpegPath,
+		TMDBApiKey: *tmdbAPIKey,
 	})
 
 	closeSignal := make(chan os.Signal, 1)
@@ -179,9 +192,6 @@ func main() {
 
 		serverDone <- true
 	}()
-
-	log.Infoln("Activate Web UI Server")
-	go web.NewStaticServer("8080")
 
 	log.Infoln("Activate API Server")
 	log.Infoln("Server is alive on port", *serverPort)

@@ -78,13 +78,14 @@
 </style>
 
 <script>
-import videojs from 'video.js'
-import 'video.js/dist/video-js.css'
+import { mapGetters } from 'vuex';
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
 import Layout from "@/layouts/Main";
 import Header from '@/components/Header';
 import { getMovieDetail, prepareMovie } from '@/utils/voodio_request';
-import { getDetailMovieById } from '@/utils/tmdb_request';
-import { getCurrHost } from '@/utils/url';
+import tmdbApi from '@/utils/tmdb_request';
+import { getCurrFullHost } from '@/utils/url';
 
 export default {
   components: {
@@ -102,6 +103,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      tmdbApiKey: 'tmdb/tmdb_api_key'
+    }),
     isMoviePrepared() {
       return this.detail.isPrepared || this.detail.isInPrepare
     }
@@ -111,9 +115,8 @@ export default {
     const { tmdbId } = this.$route.query
 
     getMovieDetail(id).then((detail) => {
-      // this.detail = detail
       this.detail = detail
-      this.videoSource = `http://${getCurrHost()}:1818/hls/${this.detail.cleanDirName}/playlist.m3u8`
+      this.videoSource = `${getCurrFullHost()}/hls/${this.detail.cleanDirName}/playlist.m3u8`
 
       if (this.isMoviePrepared) {
         this.$nextTick(() => {
@@ -124,12 +127,11 @@ export default {
               autoplay: false,
               loop: false,
               preload: 'metadata',
-              // fluid: true,
               liveui: true,
             }, function() {
               t.vplayerMounted = true
               t.videoJsInst = this
-              // this.addRemoteTextTrack({src: `http://${getCurrHost()}:1818/hls/${t.detail.cleanDirName}/subs.vtt`}, false)
+              // this.addRemoteTextTrack({src: `${getCurrFullHost()}/hls/${t.detail.cleanDirName}/subs.vtt`}, false)
             })
           }
         })
@@ -137,16 +139,13 @@ export default {
     })
 
     if (tmdbId) {
-      getDetailMovieById(tmdbId).then((tmdbInfo) => {
-        this.videoPoster = this.parseBackdrop(tmdbInfo.backdrop_path)
-        this.$set(this.detail, 'tmdbInfo', tmdbInfo)
-
-        setTimeout(() => {
-          if (this.videoJsInst) {
-            this.videoJsInst.poster(this.videoPoster)
-          }
-        }, 2000)
-      })
+      if (!this.tmdbApiKey) {
+        this.$store.dispatch('tmdb/fetchTMDBApi').then(() => {
+          this.getDetailMovieTMDB(tmdbId)
+        })
+      } else {
+        this.getDetailMovieTMDB(tmdbId)
+      }
     }
   },
   methods: {
@@ -161,13 +160,23 @@ export default {
         this.videoJsInst.play()
       }
     },
-    prepareTheMovie() {
-      prepareMovie(this.detail.ID).then(() => {
-        this.isOnPrepareMovie = true
-        setTimeout(() => {
-          this.$router.go() // reload
-        }, 4500)
-      })
+    async prepareTheMovie() {
+      await prepareMovie(this.detail.ID)
+      this.isOnPrepareMovie = true
+      setTimeout(() => this.$router.go(), 4500)
+    },
+    async getDetailMovieTMDB(tmdbId) {
+      const { getDetailMovieById } = tmdbApi(this.tmdbApiKey)
+      const tmdbInfo = await getDetailMovieById(tmdbId)
+
+      this.videoPoster = this.parseBackdrop(tmdbInfo.backdrop_path)
+      this.$set(this.detail, 'tmdbInfo', tmdbInfo)
+
+      setTimeout(() => {
+        if (this.videoJsInst) {
+          this.videoJsInst.poster(this.videoPoster)
+        }
+      }, 2000)
     }
   }
 }

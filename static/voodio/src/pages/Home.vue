@@ -26,10 +26,11 @@
 </style>
 
 <script>
+import { mapGetters } from 'vuex';
 import Layout from '@/layouts/Main';
 import Header from '@/components/Header';
 import { getMovies } from '@/utils/voodio_request';
-import { searchFirstByPopularityMovie } from '@/utils/tmdb_request'; 
+import tmdbApi from '@/utils/tmdb_request'; 
 
 export default {
   components: {
@@ -37,23 +38,13 @@ export default {
     Header
   },
   created() {
-    getMovies().then(({ movies, count }) => {
-      this.movies = movies
-      this.totalMovies = count
-
-      for (const m of this.movies) {
-        searchFirstByPopularityMovie(m.cleanBaseName).then((mov) => {
-          if (!mov) {
-            return searchFirstByPopularityMovie(m.cleanDirName).then((movv) => {
-              m.details = movv;
-              this.$forceUpdate()
-            })
-          }
-          m.details = mov;
-          this.$forceUpdate()
-        })
-      }
-    })
+    if (!this.tmdbApiKey) {
+      this.$store.dispatch('tmdb/fetchTMDBApi').then(() => {
+        this.prepareMovieList()
+      })
+    } else {
+      this.prepareMovieList()
+    }
   },
   data() {
     return {
@@ -61,7 +52,33 @@ export default {
       totalMovies: 0
     };
   },
+  computed: {
+    ...mapGetters({
+      tmdbApiKey: 'tmdb/tmdb_api_key',
+    }),
+  },
   methods: {
+    prepareMovieList() {
+      const { searchFirstByPopularityMovie } = tmdbApi(this.tmdbApiKey)
+      getMovies().then(({ movies, count }) => {
+        this.movies = movies
+        this.totalMovies = count
+
+        for (const m of this.movies) {
+          searchFirstByPopularityMovie(m.cleanBaseName).then((mov) => {
+            if (!mov) {
+              // search again with another keyword
+              return searchFirstByPopularityMovie(m.cleanDirName).then((movv) => {
+                m.details = movv;
+                this.$forceUpdate()
+              })
+            }
+            m.details = mov;
+            this.$forceUpdate()
+          })
+        }
+      })
+    },
     parseCover(coverFile) {
       return `https://image.tmdb.org/t/p/w300${coverFile}`
     }
