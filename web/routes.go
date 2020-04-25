@@ -22,6 +22,9 @@ func NewRouter(cfg *config.ServerConfig) *http.ServeMux {
 
 	router := http.NewServeMux()
 	router.Handle("/", http.StripPrefix("/", http.FileServer(statikFS)))
+
+	router.Handle("/tmdb", CorsMiddleware(JSONMiddleware(handler.TMDBHandler(cfg))))
+
 	router.Handle("/movies", CorsMiddleware(JSONMiddleware(handler.MoviesPage(cfg.DB))))
 	router.Handle("/movies/prepare", CorsMiddleware(JSONMiddleware(handler.MovieExtractHLS(cfg))))
 	router.Handle("/movies/detail", CorsMiddleware(JSONMiddleware(handler.MovieDetail(cfg))))
