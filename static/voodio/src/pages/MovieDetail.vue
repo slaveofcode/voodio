@@ -84,7 +84,7 @@ import Layout from "@/layouts/Main";
 import Header from '@/components/Header';
 import { getMovieDetail, prepareMovie } from '@/utils/voodio_request';
 import { getDetailMovieById } from '@/utils/tmdb_request';
-import { getCurrHost } from '@/utils/url';
+import { getCurrHost, getCurrPort } from '@/utils/url';
 
 export default {
   components: {
@@ -113,7 +113,7 @@ export default {
     getMovieDetail(id).then((detail) => {
       // this.detail = detail
       this.detail = detail
-      this.videoSource = `http://${getCurrHost()}:1818/hls/${this.detail.cleanDirName}/playlist.m3u8`
+      this.videoSource = `http://${getCurrHost()}:${getCurrPort()}/hls/${this.detail.cleanDirName}/playlist.m3u8`
 
       if (this.isMoviePrepared) {
         this.$nextTick(() => {
@@ -129,7 +129,7 @@ export default {
             }, function() {
               t.vplayerMounted = true
               t.videoJsInst = this
-              // this.addRemoteTextTrack({src: `http://${getCurrHost()}:1818/hls/${t.detail.cleanDirName}/subs.vtt`}, false)
+              // this.addRemoteTextTrack({src: `http://${getCurrHost()}:${getCurrPort()}/hls/${t.detail.cleanDirName}/subs.vtt`}, false)
             })
           }
         })

@@ -1,9 +1,9 @@
 import Axios from 'axios';
-import { getCurrHost } from './url'
+import { getCurrHost, getCurrPort } from './url'
 
 const getRequest = () => {
   return Axios.create({
-    baseURL: `http://${getCurrHost()}:1818`
+    baseURL: `http://${getCurrHost()}:${getCurrPort()}`
   })
 }
 
