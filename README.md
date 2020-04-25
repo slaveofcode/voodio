@@ -1,4 +1,5 @@
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/Voodio.png" align="right" />
+
 # Voodio (Private Media Server)
 Voodio is a Simple Private Media Server based on your local Movie Directories. It just a simple program doing tracking on your "Movies" folder, create an index and showing the movies as a web UI to play streamly through the browser.
 
