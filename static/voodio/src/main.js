@@ -4,6 +4,7 @@ import { faFilm, faCogs } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import router from './router'
+import store from './store'
 
 import App from './App.vue'
 
@@ -21,5 +22,6 @@ Vue.component('fa-icon', FontAwesomeIcon)
 new Vue({
   el: '#app',
   router,
+  store,
   render: (h) => h(App),
 })

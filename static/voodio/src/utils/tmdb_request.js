@@ -1,17 +1,13 @@
 import Axios from 'axios';
 
-const defaultParams = {
-  api_key: 'd92ea85a7c28e02fe5fa3abd1b5c426e'
-}
-
 const getRequest = () => {
   return Axios.create({
-    baseURL: 'https://api.themoviedb.org/3',
+    baseURL: process.env.VUE_APP_TMDB_API,
   })
 }
 
-export const searchMovie = async (keyword) => {
-  const { data } = await getRequest().get('/search/movie', {
+const searchMovie = (request, defaultParams) => async (keyword) => {
+  const { data } = await request.get('/search/movie', {
     params: {
       ...defaultParams,
       query: keyword
@@ -21,8 +17,8 @@ export const searchMovie = async (keyword) => {
   return data
 }
 
-export const searchFirstByPopularityMovie = async (keyword) => {
-  const { results } = await searchMovie(keyword)
+const searchFirstByPopularityMovie = (request, defaultParams) => async (keyword) => {
+  const { results } = await searchMovie(request, defaultParams)(keyword)
   let highestPops = 0;
   let movie = null;
 
@@ -36,12 +32,24 @@ export const searchFirstByPopularityMovie = async (keyword) => {
   return movie;
 }
 
-export const getDetailMovieById = async (id) => {
-  const { data } = await getRequest().get(`/movie/${id}`, {
+const getDetailMovieById = (request, defaultParams) => async (id) => {
+  const { data } = await request.get(`/movie/${id}`, {
     params: {
       ...defaultParams,
     }
   })
 
   return data
+}
+
+export default (api_key) => {
+  const request = getRequest()
+  const apiKeyParams = {
+    api_key,
+  }
+  return {
+    searchMovie: searchMovie(request, apiKeyParams),
+    searchFirstByPopularityMovie: searchFirstByPopularityMovie(request, apiKeyParams),
+    getDetailMovieById: getDetailMovieById(request, apiKeyParams),
+  }
 }
