@@ -140,7 +140,7 @@ func main() {
 		})
 	}
 
-	// Find duplicate directory names, kinda serial movie
+	// Find duplicate directory names, kind of serial movie
 	var movieGroups []models.Movie
 	dbConn.Table("movies").
 		Select("dir_name, dir_path, COUNT(*) count").

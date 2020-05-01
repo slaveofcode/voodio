@@ -8,6 +8,11 @@ const routes = [
     component: Home
   },
   {
+    path: '/movie/group/:id',
+    name: 'movie-group-detail',
+    component: () => import('@/pages/GroupMovieDetail'),
+  },
+  {
     path: '/movie/:id',
     name: 'movie-detail',
     component: () => import('@/pages/MovieDetail'),

@@ -6,6 +6,9 @@
         <div v-if="detail.tmdbInfo" class="movie-cover w-full">
           <img class="bg-cover" :src="parseCover(detail.tmdbInfo.poster_path)" />
         </div>
+        <div v-if="!detail.tmdbInfo" class="movie-cover w-full">
+          <img class="bg-cover" src="../assets/movie.svg" />
+        </div>
       </div>
       <div class="text-center md:w-3/6 md:text-left">
         <h1 v-if="detail.tmdbInfo" class="text-orange-400">{{ detail.tmdbInfo.title }}</h1>
@@ -17,6 +20,7 @@
         <div class="my-4 mt-6">
           <p class="font-bold mb-4">Overview</p>
           <p v-if="detail.tmdbInfo" class="text-yellow-300">{{ detail.tmdbInfo.overview }}</p>
+          <p v-if="!detail.tmdbInfo" class="text-gray-600">No description was found for this movie.</p>
         </div>
         <div v-if="detail.tmdbInfo">
           <p class="font-bold mb-4">Genre</p>
@@ -48,7 +52,7 @@
         class="video-js"
         controls
         preload="none"
-        :poster="videoPoster">
+        :poster="videoPoster ? videoPoster : require('../assets/movie.svg')">
         <source :src="videoSource" type="application/x-mpegURL" />
       </video>
     </div>
@@ -116,7 +120,7 @@ export default {
 
     getMovieDetail(id).then((detail) => {
       this.detail = detail
-      this.videoSource = `${getCurrFullHost()}/hls/${this.detail.cleanDirName}/playlist.m3u8`
+      this.videoSource = `${getCurrFullHost()}/hls/${this.detail.ID}/playlist.m3u8`
 
       if (this.isMoviePrepared) {
         this.$nextTick(() => {
@@ -131,7 +135,7 @@ export default {
             }, function() {
               t.vplayerMounted = true
               t.videoJsInst = this
-              // this.addRemoteTextTrack({src: `${getCurrFullHost()}/hls/${t.detail.cleanDirName}/subs.vtt`}, false)
+              // this.addRemoteTextTrack({src: `${getCurrFullHost()}/hls/${t.detail.ID}/subs.vtt`}, false)
             })
           }
         })

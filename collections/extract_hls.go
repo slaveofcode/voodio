@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/slaveofcode/voodio/repository/models"
@@ -181,7 +182,7 @@ func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string) error {
 
 // DoExtraction will do extract HLS files
 func DoExtraction(movie *models.Movie, appDir string, FFmpegBin string) error {
-	extractionDirName := filepath.Join(appDir, ExtractionDirName, movie.CleanDirName)
+	extractionDirName := filepath.Join(appDir, ExtractionDirName, strconv.Itoa(int(movie.ID)))
 
 	if err := os.MkdirAll(extractionDirName, 0777); err != nil {
 		return err

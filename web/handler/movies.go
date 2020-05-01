@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
-	"github.com/sirupsen/logrus"
 	"github.com/slaveofcode/voodio/repository/models"
 )
 
@@ -20,7 +19,6 @@ func MoviesPage(db *gorm.DB) http.Handler {
 			IsGroupDir: true,
 		}).Group("dir_name").Find(&groupMovies)
 
-		logrus.Infoln(len(groupMovies))
 		var allMovies []models.Movie
 
 		allMovies = append(allMovies, nonGroupMovies...)
