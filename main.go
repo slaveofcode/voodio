@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jinzhu/gorm"
 	parsetorrentname "github.com/middelink/go-parse-torrent-name"
 	log "github.com/sirupsen/logrus"
 	"github.com/slaveofcode/voodio/collections"
@@ -106,39 +107,16 @@ func main() {
 	log.Infoln("Database prepared")
 
 	// Scan movies inside given path
-	movies, err := collections.ScanDir(*parentMoviePath)
+	log.Infoln("Scanning movies...")
+	movies, subs, err := collections.ScanDir(*parentMoviePath)
 	if err != nil {
 		cleanup()
-		panic("Error while scanning path " + err.Error())
+		panic("Error while scanning movies " + err.Error())
 	}
+	log.Infoln("Scanning movies finished")
 
-	// inserts all detected movies
-	for _, movie := range movies {
-		dirName := filepath.Base(movie.Dir)
-		dirNameParsedInfo, err := parsetorrentname.Parse(filepath.Base(movie.Dir))
-		cleanDirName := ""
-		if err == nil {
-			cleanDirName = dirNameParsedInfo.Title
-		}
-
-		baseNameParsedInfo, _ := parsetorrentname.Parse(movie.MovieFile)
-		cleanBaseName := ""
-		if err == nil {
-			cleanBaseName = baseNameParsedInfo.Title
-		}
-
-		dbConn.Create(&models.Movie{
-			DirPath:       movie.Dir,
-			DirName:       dirName,
-			CleanDirName:  cleanDirName,
-			FileSize:      movie.MovieSize,
-			BaseName:      movie.MovieFile,
-			CleanBaseName: cleanBaseName,
-			MimeType:      movie.MimeType,
-			IsGroupDir:    false,
-			IsPrepared:    false,
-		})
-	}
+	saveMovies(dbConn, movies)
+	saveSubs(dbConn, subs)
 
 	// Find duplicate directory names, kind of serial movie
 	var movieGroups []models.Movie
@@ -204,4 +182,58 @@ func main() {
 	cleanup()
 
 	log.Infoln("Server closed")
+}
+
+func saveMovies(dbConn *gorm.DB, movies []collections.MovieDirInfo) {
+	for _, movie := range movies {
+		dirName := filepath.Base(movie.Dir)
+		dirNameParsedInfo, err := parsetorrentname.Parse(filepath.Base(movie.Dir))
+		cleanDirName := ""
+		if err == nil {
+			cleanDirName = dirNameParsedInfo.Title
+		}
+
+		baseNameParsedInfo, _ := parsetorrentname.Parse(movie.MovieFile)
+		cleanBaseName := ""
+		if err == nil {
+			cleanBaseName = baseNameParsedInfo.Title
+		}
+
+		dbConn.Create(&models.Movie{
+			DirPath:       movie.Dir,
+			DirName:       dirName,
+			CleanDirName:  cleanDirName,
+			FileSize:      movie.MovieSize,
+			BaseName:      movie.MovieFile,
+			CleanBaseName: cleanBaseName,
+			MimeType:      movie.MimeType,
+			IsGroupDir:    false,
+			IsPrepared:    false,
+		})
+	}
+}
+
+func saveSubs(dbConn *gorm.DB, subs []collections.SubDirInfo) {
+	for _, sub := range subs {
+		dirName := filepath.Base(sub.Dir)
+		dirNameParsedInfo, err := parsetorrentname.Parse(filepath.Base(sub.Dir))
+		cleanDirName := ""
+		if err == nil {
+			cleanDirName = dirNameParsedInfo.Title
+		}
+
+		baseNameParsedInfo, _ := parsetorrentname.Parse(sub.SubFile)
+		cleanBaseName := ""
+		if err == nil {
+			cleanBaseName = baseNameParsedInfo.Title
+		}
+
+		dbConn.Create(&models.Subtitle{
+			DirPath:       sub.Dir,
+			DirName:       dirName,
+			CleanDirName:  cleanDirName,
+			BaseName:      sub.SubFile,
+			CleanBaseName: cleanBaseName,
+		})
+	}
 }

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"github.com/slaveofcode/voodio/collections"
 	"github.com/slaveofcode/voodio/repository/models"
@@ -47,13 +46,15 @@ func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 		}
 
 		// spawn worker to do extraction
-		go func(db *gorm.DB, mov models.Movie) {
+		go func(config *config.ServerConfig, mov models.Movie) {
+			db := config.DB
+
 			db.Model(&mov).Update(&models.Movie{
 				IsInPrepare: true,
 			})
 
 			// extract
-			hasErr, transErrs := collections.DoExtraction(&mov, cfg.AppDir, cfg.FFmpegBin)
+			hasErr, transErrs := collections.DoExtraction(&mov, config.AppDir, config.FFmpegBin)
 
 			if hasErr {
 				for _, terr := range transErrs {
@@ -75,7 +76,10 @@ func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 			})
 
 			return
-		}(cfg.DB, movie)
+		}(cfg, movie)
+
+		// spawn worker to detect .srt & convert .vtt
+		go collections.ProcessSrt(cfg.DB, &movie, cfg.AppDir)
 
 		w.Header().Set("content-type", "application/json")
 		json, _ := json.Marshal(map[string]interface{}{
