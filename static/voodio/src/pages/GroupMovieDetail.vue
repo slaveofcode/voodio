@@ -99,7 +99,7 @@ export default {
               }, function() {
                 t.$set(t.vplayerMounted, m.ID, true)
                 t.$set(t.videoJsInst, m.ID, this)
-                // this.addRemoteTextTrack({src: `${getCurrFullHost()}/hls/${t.detail.cleanDirName}/subs.vtt`}, false)
+                
                 for (const sub of m.Subtitles) {
                   this.addRemoteTextTrack({
                     label: sub.subName,
