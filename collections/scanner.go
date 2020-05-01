@@ -9,7 +9,7 @@ import (
 	"github.com/gabriel-vasile/mimetype"
 )
 
-// MovieDirInfo keep movie directory information
+// MovieDirInfo is a holder to keep movie directory information
 type MovieDirInfo struct {
 	Dir       string
 	MovieFile string
@@ -18,36 +18,50 @@ type MovieDirInfo struct {
 	MimeType  string
 }
 
+// SubDirInfo is a holder to subtitle information
+type SubDirInfo struct {
+	Dir     string
+	SubFile string
+	Info    os.FileInfo
+}
+
 // ScanDir will return flat list of Movie directory information
-func ScanDir(path string) ([]MovieDirInfo, error) {
+func ScanDir(path string) ([]MovieDirInfo, []SubDirInfo, error) {
 	var listMovie []MovieDirInfo
+	var listSub []SubDirInfo
+
 	listItems, err := ioutil.ReadDir(path)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	for _, item := range listItems {
-		detectedMovies, err := Identify(path, item)
+		detectedMovies, detectedSubs, err := Identify(path, item)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		listMovie = append(listMovie, detectedMovies...)
+		listSub = append(listSub, detectedSubs...)
 	}
 
-	return listMovie, nil
+	return listMovie, listSub, nil
 }
 
 // Identify single directory of movie
-func Identify(basePath string, file os.FileInfo) ([]MovieDirInfo, error) {
+func Identify(basePath string, file os.FileInfo) ([]MovieDirInfo, []SubDirInfo, error) {
+	path := filepath.Join(basePath, file.Name())
+
 	var listMovie []MovieDirInfo
+	var listSub []SubDirInfo
+
 	if file.IsDir() {
 		// recursive call, create other segment to continue the scan operation
-		listMovie, err := ScanDir(filepath.Join(basePath, file.Name()))
-		return listMovie, err
+		listMovie, listSub, err := ScanDir(path)
+		return listMovie, listSub, err
 	}
 
-	if mime, validVideo := isVideo(filepath.Join(basePath, file.Name())); validVideo {
+	if mime, validVideo := isVideo(path); validVideo {
 		listMovie = append(listMovie, MovieDirInfo{
 			Dir:       basePath,
 			MovieFile: file.Name(),
@@ -57,7 +71,15 @@ func Identify(basePath string, file os.FileInfo) ([]MovieDirInfo, error) {
 		})
 	}
 
-	return listMovie, nil
+	if validSub := IsTextSrt(path); validSub {
+		listSub = append(listSub, SubDirInfo{
+			Dir:     basePath,
+			SubFile: file.Name(),
+			Info:    file,
+		})
+	}
+
+	return listMovie, listSub, nil
 }
 
 func getFileSizeInMB(file os.FileInfo) float64 {
@@ -95,4 +117,17 @@ func isVideo(path string) (string, bool) {
 	}
 
 	return mime.String(), listChecker[mime.String()]
+}
+
+// IsTextSrt will return valid status detection of .srt file
+func IsTextSrt(path string) bool {
+	mime, err := mimetype.DetectFile(path)
+	if err != nil {
+		return false
+	}
+
+	validMime := mime.String() == "text/plain; charset=utf-8"
+	validExt := filepath.Ext(path) == ".srt" || filepath.Ext(path) == ".SRT"
+
+	return validMime && validExt
 }
