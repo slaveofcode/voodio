@@ -31,8 +31,17 @@ func GroupMoviesPage(db *gorm.DB) http.Handler {
 			DirPath:    movie.DirPath,
 		}).Find(&groupMovies)
 
+		// subtitles
+		var movies []movieResp
+		for _, mov := range groupMovies {
+			movies = append(movies, movieResp{
+				Movie:     mov,
+				Subtitles: getSubMovieInfos(db, &mov),
+			})
+		}
+
 		json, _ := json.Marshal(map[string]interface{}{
-			"movies": groupMovies,
+			"movies": movies,
 			"count":  len(groupMovies),
 		})
 

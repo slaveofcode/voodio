@@ -135,7 +135,14 @@ export default {
             }, function() {
               t.vplayerMounted = true
               t.videoJsInst = this
-              // this.addRemoteTextTrack({src: `${getCurrFullHost()}/hls/${t.detail.ID}/subs.vtt`}, false)
+
+              for (const sub of t.detail.Subtitles) {
+                this.addRemoteTextTrack({
+                  label: sub.subName,
+                  src: `${getCurrFullHost()}/hls/${t.detail.ID}/subs/${sub.subFile}`
+                }, false)
+              }
+              
             })
           }
         })

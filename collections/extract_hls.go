@@ -203,11 +203,19 @@ func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string) (bool, []Transc
 	return hasError, errors
 }
 
+func getExtractionMovieDir(appDir string, movieID uint) string {
+	return filepath.Join(appDir, ExtractionDirName, strconv.Itoa(int(movieID)))
+}
+
+func createWriteableDir(path string) error {
+	return os.MkdirAll(path, 0777)
+}
+
 // DoExtraction will do extract HLS files
 func DoExtraction(movie *models.Movie, appDir string, FFmpegBin string) (bool, []TranscodingError) {
-	extractionDirName := filepath.Join(appDir, ExtractionDirName, strconv.Itoa(int(movie.ID)))
+	extractionDirName := getExtractionMovieDir(appDir, movie.ID)
 
-	if err := os.MkdirAll(extractionDirName, 0777); err != nil {
+	if err := createWriteableDir(extractionDirName); err != nil {
 		return true, nil
 	}
 
