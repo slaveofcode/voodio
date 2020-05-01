@@ -53,16 +53,21 @@ func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 			})
 
 			// extract
-			err := collections.DoExtraction(&mov, cfg.AppDir, cfg.FFmpegBin)
+			hasErr, transErrs := collections.DoExtraction(&mov, cfg.AppDir, cfg.FFmpegBin)
 
-			if err != nil {
-				logrus.Errorln("Something wrong when extracting HLS file", err)
+			if hasErr {
+				for _, terr := range transErrs {
+					logrus.Errorln("Trouble when extracting HLS["+terr.Resolution+"]", terr.Error)
+				}
+
 				db.Model(&mov).Update(&models.Movie{
 					IsInPrepare: false,
 					IsPrepared:  false,
 				})
 				return
 			}
+
+			logrus.Infoln("Extracting HLS finished:", mov.CleanBaseName)
 
 			db.Model(&mov).Update(&models.Movie{
 				IsInPrepare: false,
