@@ -96,7 +96,7 @@ func main() {
 	dbConn, err := repository.OpenDB(getDBPath())
 	if err != nil {
 		cleanup()
-		panic("Unable to create DB connection")
+		panic("Unable to create DB connection:" + err.Error())
 	}
 
 	defer dbConn.Close()
