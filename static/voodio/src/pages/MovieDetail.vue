@@ -116,7 +116,7 @@ export default {
 
     getMovieDetail(id).then((detail) => {
       this.detail = detail
-      this.videoSource = `${getCurrFullHost()}/hls/${this.detail.cleanDirName}/playlist.m3u8`
+      this.videoSource = `${getCurrFullHost()}/hls/${this.detail.ID}/playlist.m3u8`
 
       if (this.isMoviePrepared) {
         this.$nextTick(() => {
@@ -131,7 +131,7 @@ export default {
             }, function() {
               t.vplayerMounted = true
               t.videoJsInst = this
-              // this.addRemoteTextTrack({src: `${getCurrFullHost()}/hls/${t.detail.cleanDirName}/subs.vtt`}, false)
+              // this.addRemoteTextTrack({src: `${getCurrFullHost()}/hls/${t.detail.ID}/subs.vtt`}, false)
             })
           }
         })

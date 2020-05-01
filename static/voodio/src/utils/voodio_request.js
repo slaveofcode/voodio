@@ -28,6 +28,18 @@ export const getMovieDetail = async (movieId) => {
   return data
 }
 
+export const getMovieGroups = async (movieId) => {
+  const { status, data } = await getRequest().get('/movies/group', {
+    params: { movieId }
+  })
+
+  if (status !== 200) {
+    return {}
+  }
+
+  return data
+}
+
 export const prepareMovie = async (movieId) => {
   const { status, data } = await getRequest().get('/movies/prepare', {
     params: { movieId }
