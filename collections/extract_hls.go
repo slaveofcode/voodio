@@ -1,12 +1,13 @@
 package collections
 
 import (
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/slaveofcode/voodio/repository/models"
 )
 
@@ -14,6 +15,12 @@ const (
 	// ExtractionDirName store directory name of extracted HLS files
 	ExtractionDirName = "generated_hls"
 )
+
+// TranscodingError will hold the error information after transcoding process finished
+type TranscodingError struct {
+	Resolution string
+	Error      error
+}
 
 func cmdHLS360p(movieFilePath, destDir string) []string {
 	// fixed width not divisible by 2
@@ -140,7 +147,7 @@ func createm3u8Playlist(path string) {
 }
 
 // ExtractMovHLS will generate HLS files
-func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string) error {
+func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string) (bool, []TranscodingError) {
 	resolutions := map[string]func(string, string) []string{
 		"360p":  cmdHLS360p,
 		"480p":  cmdHLS480p,
@@ -150,41 +157,66 @@ func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string) error {
 
 	createm3u8Playlist(destDir)
 
-	output := make(chan error, len(resolutions))
-	for _, cmdStrings := range resolutions {
-		go func(out chan<- error, commandProducer func(string, string) []string) {
+	output := make(chan TranscodingError, len(resolutions))
+	for reso, cmdStrings := range resolutions {
+		go func(out chan<- TranscodingError, commandProducer func(string, string) []string, resolution string) {
 			cmd := exec.Command(ffmpegPathBin, commandProducer(movieFilePath, destDir)...)
-			stdout, err := cmd.CombinedOutput()
+			cmd.Stdout = logrus.New().Out
+			cmd.Stderr = logrus.New().Out
 
-			log.Println("Args:", strings.Join(cmd.Args, " "))
-			log.Println("output:", string(stdout))
+			logrus.Infoln("Exec:", strings.Join(cmd.Args, " "))
+
+			err := cmd.Start()
+
 			if err != nil {
-				out <- err
+				logrus.Errorln("Exec error:", err)
+				out <- TranscodingError{
+					Resolution: resolution,
+					Error:      err,
+				}
 				return
 			}
 
-			out <- nil
-		}(output, cmdStrings)
+			out <- TranscodingError{
+				Resolution: resolution,
+				Error:      nil,
+			}
+		}(output, cmdStrings, reso)
 	}
 
-	var errors []error
+	var hasError bool
+	errors := make([]TranscodingError, len(resolutions))
+
+	iter := 0
 	for out := range output {
+		if out.Error != nil && !hasError {
+			hasError = true
+		}
 		errors = append(errors, out)
+		iter++
+
+		if iter == len(resolutions) {
+			close(output)
+		}
 	}
 
-	log.Println(errors)
+	return hasError, errors
+}
 
-	close(output)
+func getExtractionMovieDir(appDir string, movieID uint) string {
+	return filepath.Join(appDir, ExtractionDirName, strconv.Itoa(int(movieID)))
+}
 
-	return nil
+func createWriteableDir(path string) error {
+	return os.MkdirAll(path, 0777)
 }
 
 // DoExtraction will do extract HLS files
-func DoExtraction(movie *models.Movie, appDir string, FFmpegBin string) error {
-	extractionDirName := filepath.Join(appDir, ExtractionDirName, movie.CleanDirName)
+func DoExtraction(movie *models.Movie, appDir string, FFmpegBin string) (bool, []TranscodingError) {
+	extractionDirName := getExtractionMovieDir(appDir, movie.ID)
 
-	if err := os.MkdirAll(extractionDirName, 0777); err != nil {
-		return err
+	if err := createWriteableDir(extractionDirName); err != nil {
+		return true, nil
 	}
 
 	return ExtractMovHLS(

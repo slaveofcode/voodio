@@ -6,6 +6,8 @@ import (
 
 	// dialect for sqlite
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	// sqlite driver
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // OpenDB will create new database connection to Sqlite
@@ -20,5 +22,8 @@ func OpenDB(dbPath string) (*gorm.DB, error) {
 
 // Migrate will do migration of models
 func Migrate(db *gorm.DB) {
-	db.AutoMigrate(&models.Movie{})
+	db.AutoMigrate(
+		&models.Movie{},
+		&models.Subtitle{},
+	)
 }
