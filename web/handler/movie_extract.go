@@ -54,7 +54,7 @@ func MovieExtractHLS(cfg *config.ServerConfig) http.Handler {
 			})
 
 			// extract
-			hasErr, transErrs := collections.DoExtraction(&mov, config.AppDir, config.FFmpegBin)
+			hasErr, transErrs := collections.DoExtraction(&mov, config)
 
 			if hasErr {
 				for _, terr := range transErrs {
