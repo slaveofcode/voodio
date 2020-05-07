@@ -7,7 +7,7 @@ Voodio is a Simple Private Media Server based on your local Movie Directories. I
 I always wanted to watch my old movie collection that saved on my external hardisk or on my PC drive. But unfortunately I'am too lazy to open my computer, starting to crawl and watch those movies. I always wonder if I could see those movies as a Website, click the detail and play, like I'm watching on the Netfl*x, but the movie is on local Hard Drive. 
 
 ## Application Behavior
-This application will need extra space like **8-10x** of the played video which extracted from FFmpeg transcoding/transmuxing process of **HLS** files, the space needed could be lower if there a less available resolution generated (like only for 480p or 720o), then you can play it streamly through your local network on your favourite device via **Browser**. The space will be cleand up after the server is turned of (killed), it will be immediatelly deletes all the generated HLS files so you get the space again.
+This application will need extra space like **8-10x** of the played video which extracted from FFmpeg transcoding/transmuxing process of **HLS** files, the space needed could be lower if there a less available resolution generated (like only for 480p or 720p), then you can play it streamly through your local network on your favourite device via **Browser**. The space will be cleand up after the server is turned of (killed), it will be immediatelly deletes all the generated HLS files so you get the space again.
 
 ## Installation
 
@@ -15,7 +15,7 @@ This application will need extra space like **8-10x** of the played video which 
 
 Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html) page to install based on your current OS. FFmpeg is available for **Windows**, **Mac** and **Linux**. Please use FFmpeg with version below **4.0** or better with version **3.***.
 
-FFmpeg with version >= 4.1 had an issue of immediatelly generate playlist file (**.m3u8**), then do update  periodically at transcoding time, I don't know why that's happen, but I think there's a solution for that, just need a more time to find out.
+FFmpeg with version **>= 4.1** had an issue of immediatelly generate playlist file (**.m3u8**), then do update  periodically at transcoding time, I don't know why that's happen, but I think there's a solution for that, just need a more time to find out.
 
 ### Using Precompiled Binary
 
@@ -36,7 +36,7 @@ If the configuration and steps above is complete, you can heads up to http://[yo
 
 - `-path` The full path of the video directory
 - `-tmdb-key` API key of TMDB, you can grab one at [Official TMDB API](https://www.themoviedb.org/documentation/api)
-- `-port` (optional) The port number for the server to run
+- `-port` (optional) The port number for the server to run, default to 1818
 - `-ffmpeg-bin` (optional) The path of FFmpeg binary, if you have a different path of FFmpeg
 
 ### Screenshot
