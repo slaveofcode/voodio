@@ -74,11 +74,25 @@ func cleanup() {
 	os.RemoveAll(getAppDir())
 }
 
+type resolutionParam []string
+
+func (r *resolutionParam) String() string {
+	return ""
+}
+
+func (r *resolutionParam) Set(param string) error {
+	*r = append(*r, param)
+	return nil
+}
+
 func main() {
 	parentMoviePath := flag.String("path", "", "Path string of parent movie directory")
 	serverPort := flag.Int("port", 1818, "Server port number")
 	ffmpegPath := flag.String("ffmpeg-bin", "ffmpeg", "Custom full path for FFmpeg binary")
 	tmdbAPIKey := flag.String("tmdb-key", "", "Your TMDB Api Key, get here if you don't have one https://www.themoviedb.org/documentation/api")
+
+	screenRes := resolutionParam{}
+	flag.Var(&screenRes, "resolution", "Specific resolution to be processed: 360p, 480p, 720p and 1080p, this could be multiple")
 
 	flag.Parse()
 
@@ -143,11 +157,12 @@ func main() {
 
 	// create simple webserver
 	webServer := web.NewServer(&config.ServerConfig{
-		DB:         dbConn,
-		Port:       *serverPort,
-		AppDir:     getAppDir(),
-		FFmpegBin:  *ffmpegPath,
-		TMDBApiKey: *tmdbAPIKey,
+		DB:                dbConn,
+		Port:              *serverPort,
+		AppDir:            getAppDir(),
+		FFmpegBin:         *ffmpegPath,
+		TMDBApiKey:        *tmdbAPIKey,
+		ScreenResolutions: screenRes,
 	})
 
 	closeSignal := make(chan os.Signal, 1)
@@ -157,7 +172,7 @@ func main() {
 
 	go func() {
 		<-closeSignal
-		log.Infoln("got close signal")
+		log.Infoln("Shutting down...")
 
 		// Waiting for current process server to finish with 30 secs timeout
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)

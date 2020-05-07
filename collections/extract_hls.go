@@ -9,6 +9,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/slaveofcode/voodio/repository/models"
+	"github.com/slaveofcode/voodio/web/config"
 )
 
 const (
@@ -147,12 +148,19 @@ func createm3u8Playlist(path string) {
 }
 
 // ExtractMovHLS will generate HLS files
-func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string) (bool, []TranscodingError) {
-	resolutions := map[string]func(string, string) []string{
+func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string, reso []string) (bool, []TranscodingError) {
+	availableResolutions := map[string]func(string, string) []string{
 		"360p":  cmdHLS360p,
 		"480p":  cmdHLS480p,
 		"720p":  cmdHLS720p,
 		"1080p": cmdHLS1080p,
+	}
+
+	resolutions := make(map[string]func(string, string) []string)
+	for _, r := range reso {
+		if availableResolutions[r] != nil {
+			resolutions[r] = availableResolutions[r]
+		}
 	}
 
 	createm3u8Playlist(destDir)
@@ -212,8 +220,8 @@ func createWriteableDir(path string) error {
 }
 
 // DoExtraction will do extract HLS files
-func DoExtraction(movie *models.Movie, appDir string, FFmpegBin string) (bool, []TranscodingError) {
-	extractionDirName := getExtractionMovieDir(appDir, movie.ID)
+func DoExtraction(movie *models.Movie, cfg *config.ServerConfig) (bool, []TranscodingError) {
+	extractionDirName := getExtractionMovieDir(cfg.AppDir, movie.ID)
 
 	if err := createWriteableDir(extractionDirName); err != nil {
 		return true, nil
@@ -222,6 +230,7 @@ func DoExtraction(movie *models.Movie, appDir string, FFmpegBin string) (bool, [
 	return ExtractMovHLS(
 		filepath.Join(movie.DirPath, movie.BaseName),
 		extractionDirName,
-		FFmpegBin,
+		cfg.FFmpegBin,
+		cfg.ScreenResolutions,
 	)
 }
