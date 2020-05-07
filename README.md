@@ -7,7 +7,7 @@ Voodio is a Simple Private Media Server based on your local Movie Directories. I
 I always wanted to watch my old movie collection that saved on my external hardisk or on my PC drive. But unfortunately I'am too lazy to open my computer, starting to crawl and watch those movies. I always wonder if I could see those movies as a Website through my Home network (LAN), click the detail and play, like I'm watching on the Netfl*x (but using a browser :P).
 
 ## Yo Warning!
-This project is experimental, the application will be doing some transcoding process of the selected video file, also it will consuming your CPU usage (yeah, because your computer is be a server now). The available space on your *OS cache path* location is also decreased for a temporary, to store a ***.ts** files for playing the video on browser. **Please consider this behavior before running it on your computer.**
+This project is experimental, the application will be doing some transcoding process of the selected video file, also it will consuming your CPU usage (yeah, because your computer is being a server now). The available space on your *OS cache path* location is also decreased for a temporary, to store a ***.ts** files for playing the video on browser. **Please consider this behavior before running it on your computer.**
 
 ## Application Behavior
 This application will need extra space like **8-10x** of the played video which extracted from FFmpeg transcoding/transmuxing process of **HLS** files, the space needed could be lower if there a less available resolution to generate (like only for 480p or 720p), then you can play it streamly through your local network with your favourite device via any **Browser**. The space used through this operation will be cleand up after the server is turned of (killed), it basically will be immediatelly deletes all the generated HLS files so you get free space again.
@@ -43,7 +43,7 @@ If the configuration and steps above is complete, you can heads up to http://[yo
 - `-ffmpeg-bin` (optional) The path of FFmpeg binary, if you have a different path of FFmpeg
 - `-resolution` (optional) By default the program will produce 4 resolution (360p, 480p, 720p and 1080p), this option can be supplied multiple times
 
-### Screenshot
+### Some Screenshots
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/home.png" align="center" />
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/detail.png" align="center" />
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/play.png" align="center" />
