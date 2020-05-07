@@ -1,6 +1,13 @@
 # Voodio Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.3.0]
+- ee2927b Update readme
+- ca46c1f Merge branch 'master' of github.com:slaveofcode/voodio into develop
+- 40efd73 Added selected screen resolution
+- 221dbab Update README.md
+- 5da9196 Merge tag 'v1.2.0' into develop
+
 ## [1.2.0]
 - 105adde Change Readme
 - 9a862e0 Update web static to support subtitles
