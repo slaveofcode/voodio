@@ -4,10 +4,10 @@
 Voodio is a Simple Private Media Server based on your local Movie Directories. It just a simple program doing tracking on your "Movies" folder, create an index and showing the movies via Web UI to play streamly through the browser.
 
 ## Background
-I always wanted to watch my old movie collection that saved on my external hardisk or on my PC drive. But unfortunately I'am too lazy to open my computer, starting to crawl and watch those movies. I always wonder if I could see those movies as a Website, click the detail and play, like I'm watching on the Netfl*x, but the movie is on local Hard Drive.
+I always wanted to watch my old movie collection that saved on my external hardisk or on my PC drive. But unfortunately I'am too lazy to open my computer, starting to crawl and watch those movies. I always wonder if I could see those movies as a Website through my Home network (LAN), click the detail and play, like I'm watching on the Netfl*x (but using a browser :P).
 
-## Warning!
-This application will transcode the selected video file, and consume your CPU usage while transcoding is happen in the background. The available space on your *OS cache path* location is also decreased for a temporary, to store a ***.ts** files for playing the video on browser. **Please consider this behavior before running it on your computer.**
+## Yo Warning!
+This project is experimental, the application will be doing some transcoding process of the selected video file, also it will consuming your CPU usage (yeah, because your computer is be a server now). The available space on your *OS cache path* location is also decreased for a temporary, to store a ***.ts** files for playing the video on browser. **Please consider this behavior before running it on your computer.**
 
 ## Application Behavior
 This application will need extra space like **8-10x** of the played video which extracted from FFmpeg transcoding/transmuxing process of **HLS** files, the space needed could be lower if there a less available resolution to generate (like only for 480p or 720p), then you can play it streamly through your local network with your favourite device via any **Browser**. The space used through this operation will be cleand up after the server is turned of (killed), it basically will be immediatelly deletes all the generated HLS files so you get free space again.
