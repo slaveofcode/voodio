@@ -1,6 +1,10 @@
 # Voodio Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.3.1]
+- 26d7df7 Added IP server information
+- 6b82771 Merge tag 'v1.3.0' into develop
+
 ## [1.3.0]
 - ee2927b Update readme
 - ca46c1f Merge branch 'master' of github.com:slaveofcode/voodio into develop
