@@ -1,6 +1,10 @@
 # Voodio Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.3.2]
+- 25bdd1a Fix default resolution
+- c8a7110 Merge tag 'v1.3.1' into develop
+
 ## [1.3.1]
 - 26d7df7 Added IP server information
 - 6b82771 Merge tag 'v1.3.0' into develop
