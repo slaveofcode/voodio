@@ -28,7 +28,7 @@ Go to the prebuilt binary on the [release section here](https://github.com/slave
 
     // run the binary with path to the parent of video directories from your module binary path
     // options for port and ffmpeg-bin are optional
-    ~/go/bin/voodio -port 8080 -tmdb-key <your-tmdb-key> -ffmpeg-bin /usr/bin/ffmpeg -path /path/to/videos/dir 
+    ~/go/bin/voodio -port 8080 -tmdb-key <your-tmdb-key> -ffmpeg-bin /usr/bin/ffmpeg -path /path/to/videos/dir -resolution 720p -resolution 480p
 
 If the configuration and steps above is complete, you can heads up to http://[your-ip-host-or-localhost]:8080 on your browser to start watching.
 
@@ -38,6 +38,8 @@ If the configuration and steps above is complete, you can heads up to http://[yo
 - `-tmdb-key` API key of TMDB, you can grab one at [Official TMDB API](https://www.themoviedb.org/documentation/api)
 - `-port` (optional) The port number for the server to run, default to 1818
 - `-ffmpeg-bin` (optional) The path of FFmpeg binary, if you have a different path of FFmpeg
+- `-resolution` (optional) By default the program will produce 4 resolution (360p, 480p, 720p and 1080p), this option can be supplied multiple times
+
 
 ### Screenshot
 <img src="https://raw.github.com/slaveofcode/voodio/master/assets/home.png" align="center" />
