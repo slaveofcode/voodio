@@ -14,9 +14,9 @@ This application will need extra space like **8-10x** of the played video which 
 
 ## Installation
 
-### Have FFMPEG installed on your OS
+### Have FFMPEG installed on your OS or at least you have the Binary
 
-Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html) page to install based on your current OS. FFmpeg is available for **Windows**, **Mac** and **Linux**. Please use FFmpeg with version **4.0** or better with version **3.*** (already tested).
+Visit [FFmpeg Official Download](https://www.ffmpeg.org/download.html) page to install based on your current OS, or just get the executable binary. FFmpeg is available for **Windows**, **Mac** and **Linux**. Please use FFmpeg with version **4.0** or better with version **3.*** (already tested).
 
 FFmpeg with version **>= 4.1** had an issue of immediatelly generate playlist file (**.m3u8**). When transcoding process is running, it doesn't update periodically for *.m3u8 file about generated *.ts files, I don't know exactly why that's happen, but I think there's a solution for that, just need a more time to figure it out.
 
