@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"flag"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -187,7 +189,8 @@ func main() {
 	}()
 
 	log.Infoln("Activate API Server")
-	log.Infoln("Server is alive on port", *serverPort)
+	log.Infoln("Server is alive")
+	showIPServer(*serverPort)
 	if err = webServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Errorln("Unable to start server on port", *serverPort)
 	}
@@ -197,6 +200,18 @@ func main() {
 	cleanup()
 
 	log.Infoln("Server closed")
+}
+
+func showIPServer(port int) {
+	addrs, _ := net.InterfaceAddrs()
+
+	for _, a := range addrs {
+		if ipnet, ok := a.(*net.IPNet); ok {
+			if ipnet.IP.To4() != nil {
+				log.Infoln("http://" + ipnet.IP.String() + ":" + strconv.Itoa(port))
+			}
+		}
+	}
 }
 
 func saveMovies(dbConn *gorm.DB, movies []collections.MovieDirInfo) {
