@@ -93,15 +93,19 @@ func main() {
 	ffmpegPath := flag.String("ffmpeg-bin", "ffmpeg", "Custom full path for FFmpeg binary")
 	tmdbAPIKey := flag.String("tmdb-key", "", "Your TMDB Api Key, get here if you don't have one https://www.themoviedb.org/documentation/api")
 
-	screenRes := resolutionParam{
-		"360p",
-		"480p",
-		"720p",
-		"1080p",
-	}
+	screenRes := resolutionParam{}
 	flag.Var(&screenRes, "resolution", "Specific resolution to be processed: 360p, 480p, 720p and 1080p, this could be multiple")
 
 	flag.Parse()
+
+	if len(screenRes) == 0 {
+		screenRes = resolutionParam{
+			"360p",
+			"480p",
+			"720p",
+			"1080p",
+		}
+	}
 
 	if len(*parentMoviePath) == 0 {
 		cleanup()
