@@ -131,20 +131,43 @@ func cmdHLS1080p(movieFilePath, destDir string) []string {
 	}
 }
 
-func createm3u8Playlist(path string) {
+func createm3u8Playlist(path string, res []string) {
 	f, _ := os.Create(filepath.Join(path, "playlist.m3u8"))
 	defer f.Close()
 
-	f.Write([]byte(`#EXTM3U
+	c := `#EXTM3U
 #EXT-X-VERSION:3
-#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
+`
+
+	for _, r := range res {
+		if r == "360p" {
+			c = c + `#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
 360p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=842x480
+`
+		}
+
+		if r == "480p" {
+			c = c + `#EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=842x480
 480p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
+`
+		}
+
+		if r == "720p" {
+			c = c + `#EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
 720p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
-1080p.m3u8`))
+`
+		}
+
+		if r == "1080p" {
+			c = c + `#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
+1080p.m3u8
+`
+		}
+	}
+
+	logrus.Debugln(c)
+
+	f.Write([]byte(c))
 }
 
 // ExtractMovHLS will generate HLS files
@@ -156,6 +179,8 @@ func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string, reso []string) 
 		"1080p": cmdHLS1080p,
 	}
 
+	logrus.Debugln("reso", reso)
+
 	resolutions := make(map[string]func(string, string) []string)
 	for _, r := range reso {
 		if availableResolutions[r] != nil {
@@ -163,7 +188,9 @@ func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string, reso []string) 
 		}
 	}
 
-	createm3u8Playlist(destDir)
+	logrus.Debugln("generated reso", resolutions)
+
+	createm3u8Playlist(destDir, reso)
 
 	output := make(chan TranscodingError, len(resolutions))
 	for reso, cmdStrings := range resolutions {
