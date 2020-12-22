@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strconv"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	parsetorrentname "github.com/middelink/go-parse-torrent-name"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/slaveofcode/voodio/collections"
 	"github.com/slaveofcode/voodio/logger"
@@ -90,7 +92,6 @@ func (r *resolutionParam) Set(param string) error {
 func main() {
 	parentMoviePath := flag.String("path", "", "Path string of parent movie directory")
 	serverPort := flag.Int("port", 1818, "Server port number")
-	ffmpegPath := flag.String("ffmpeg-bin", "ffmpeg", "Custom full path for FFmpeg binary")
 	tmdbAPIKey := flag.String("tmdb-key", "", "Your TMDB Api Key, get here if you don't have one https://www.themoviedb.org/documentation/api")
 
 	screenRes := resolutionParam{}
@@ -112,7 +113,10 @@ func main() {
 		panic("No movie path directory provided, exited")
 	}
 
-	// TODO: Check FFmpeg installed or setup in a right way
+	//Check FFmpeg installed or setup in a right way
+	if !checkFfmpegInstalled() {
+		panic("sorry, you haven't install ffmpeg, INSTALL FFMPEG first!")
+	}
 
 	if len(strings.TrimSpace(*tmdbAPIKey)) == 0 {
 		cleanup()
@@ -171,7 +175,6 @@ func main() {
 		DB:                dbConn,
 		Port:              *serverPort,
 		AppDir:            getAppDir(),
-		FFmpegBin:         *ffmpegPath,
 		TMDBApiKey:        *tmdbAPIKey,
 		ScreenResolutions: screenRes,
 	})
@@ -275,4 +278,13 @@ func saveSubs(dbConn *gorm.DB, subs []collections.SubDirInfo) {
 			CleanBaseName: cleanBaseName,
 		})
 	}
+}
+
+func checkFfmpegInstalled() bool {
+	_, err := exec.LookPath("ffmpeg")
+	if err != nil {
+		logrus.Errorln("error: ", err)
+		return false
+	}
+	return true
 }
