@@ -171,7 +171,7 @@ func createm3u8Playlist(path string, res []string) {
 }
 
 // ExtractMovHLS will generate HLS files
-func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string, reso []string) (bool, []TranscodingError) {
+func ExtractMovHLS(movieFilePath, destDir string, reso []string) (bool, []TranscodingError) {
 	availableResolutions := map[string]func(string, string) []string{
 		"360p":  cmdHLS360p,
 		"480p":  cmdHLS480p,
@@ -195,7 +195,7 @@ func ExtractMovHLS(movieFilePath, destDir, ffmpegPathBin string, reso []string) 
 	output := make(chan TranscodingError, len(resolutions))
 	for reso, cmdStrings := range resolutions {
 		go func(out chan<- TranscodingError, commandProducer func(string, string) []string, resolution string) {
-			cmd := exec.Command(ffmpegPathBin, commandProducer(movieFilePath, destDir)...)
+			cmd := exec.Command("ffmpeg", commandProducer(movieFilePath, destDir)...)
 			cmd.Stdout = logrus.New().Out
 			cmd.Stderr = logrus.New().Out
 
@@ -257,7 +257,6 @@ func DoExtraction(movie *models.Movie, cfg *config.ServerConfig) (bool, []Transc
 	return ExtractMovHLS(
 		filepath.Join(movie.DirPath, movie.BaseName),
 		extractionDirName,
-		cfg.FFmpegBin,
 		cfg.ScreenResolutions,
 	)
 }

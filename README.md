@@ -40,7 +40,6 @@ If the configuration and steps above is complete, you can heads up to http://[yo
 - `-path` The full path of the video directory
 - `-tmdb-key` API key of TMDB, you can grab one at [Official TMDB API](https://www.themoviedb.org/documentation/api)
 - `-port` (optional) The port number for the server to run, default to 1818
-- `-ffmpeg-bin` (optional) The path of FFmpeg binary, if you have a different path of FFmpeg
 - `-resolution` (optional) By default the program will produce 4 resolution (360p, 480p, 720p and 1080p), this option can be supplied multiple times
 
 ### Some Screenshots
